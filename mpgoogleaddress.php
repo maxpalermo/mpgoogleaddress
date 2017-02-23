@@ -1,7 +1,5 @@
 <?php
-
 /**
- *
  * 2017 mpSOFT
  *
  * NOTICE OF LICENSE
@@ -24,7 +22,6 @@
  *  @copyright 2017 mpSOFT Massimiliano Palermo
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  International Registered Trademark & Property of mpSOFT
- *
  */
 
 if (!defined('_PS_VERSION_')) {
@@ -93,16 +90,16 @@ class MpGoogleAddress extends Module
         $address_invoice = new AddressCore($order->id_address_invoice);
         $state_delivery = new StateCore($address_delivery->id_state);
         $state_invoice = new StateCore($address_invoice->id_state);
-        $this->context->smarty->assign('address_delivery',$address_delivery);
-        $this->context->smarty->assign('address_invoice',$address_invoice);
-        $this->context->smarty->assign('state_delivery',$state_delivery);
-        $this->context->smarty->assign('state_invoice',$state_invoice);
+        $this->context->smarty->assign('address_delivery', $address_delivery);
+        $this->context->smarty->assign('address_invoice', $address_invoice);
+        $this->context->smarty->assign('state_delivery', $state_delivery);
+        $this->context->smarty->assign('state_invoice', $state_invoice);
         $this->context->smarty->assign('api_key', Configuration::get('MPGOOGLEADDRESS_KEY'));
         $this->context->smarty->assign('showmap', Configuration::get('MPGOOGLEADDRESS_SHOW'));
         $this->context->smarty->assign('printlabel', Configuration::get('MPGOOGLEADDRESS_PRINT'));
-        $this->context->smarty->assign('http',$this->getHTTP());
-        $this->context->smarty->assign('host',$_SERVER['HTTP_HOST']);
-        $this->context->smarty->assign('base',$_SERVER['REWRITEBASE']);
+        $this->context->smarty->assign('http', $this->getHTTP());
+        $this->context->smarty->assign('host', $_SERVER['HTTP_HOST']);
+        $this->context->smarty->assign('base', $_SERVER['REWRITEBASE']);
         return $this->display(__FILE__, $file);
     }
      
@@ -129,17 +126,13 @@ class MpGoogleAddress extends Module
                 //if (strpos($file_type,"jpg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
                 //if (strpos($file_type,"gif")){$image = dirname(__FILE__) . "/image_logo.gif";$image_type="gif";}
                 
-                if (!empty($image))
-                {
-                    if (move_uploaded_file($file_tmp_name, $image))
-                    {
+                if (!empty($image)) {
+                    if (move_uploaded_file($file_tmp_name, $image)) {
                         //set permissions
-                        chmod($image,0775);
-                        Configuration::updateValue('MP_PRINTLABELS_FILE',basename($image));
+                        chmod($image, 0775);
+                        Configuration::updateValue('MP_PRINTLABELS_FILE', basename($image));
                         $this->generateThumb();
-                    }
-                    else
-                    {
+                    } else {
                         $this->image_url = "";
                         $this->img_size  = 0;
                     }
@@ -186,7 +179,7 @@ class MpGoogleAddress extends Module
     {
         $image = dirname(__FILE__) . "/" . Configuration::get('MP_PRINTLABELS_FILE');
         $this->img_url  = ImageManager::thumbnail($image, 'printlabel_logo.jpg', 200, 'jpg', true, true);
-        $this->img_size = file_exists($image) ? number_format(filesize($image)/1024,2) : 0;
+        $this->img_size = file_exists($image) ? number_format(filesize($image)/1024, 2) : 0;
     }
     
     public function displayForm()
