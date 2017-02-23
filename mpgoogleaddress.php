@@ -1,10 +1,30 @@
 <?php
 
-/* @category  Prestashop Modules
- * @package   mpgoogleaddress
- * @author    mpsoft, Massimiliano Palermo
- * @copyright Copyright 2017 © MPsoft All right reserved
- * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+/**
+ *
+ * 2017 mpSOFT
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License (AFL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/afl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade PrestaShop to newer
+ * versions in the future. If you wish to customize PrestaShop for your
+ * needs please refer to http://www.prestashop.com for more information.
+ *
+ *  @author    mpSOFT <info@mpsoft.it>
+ *  @copyright 2017 mpSOFT Massimiliano Palermo
+ *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  International Registered Trademark & Property of mpSOFT
+ *
  */
 
 if (!defined('_PS_VERSION_')){exit;}
@@ -97,11 +117,11 @@ class MpGoogleAddress extends Module
              */
             if (!empty($_FILES) && $_FILES['MP_PRINTLABELS_FILE']['error']==0) {
                 $fileupd = $_FILES['MP_PRINTLABELS_FILE'];
-                $file_name = $fileupd["name"];
-                $file_type = $fileupd["type"];
+                //$file_name = $fileupd["name"];
+                //$file_type = $fileupd["type"];
                 $file_tmp_name = $fileupd["tmp_name"];
-                $file_error = $fileupd["error"];
-                $file_size = $fileupd["size"];
+                //$file_error = $fileupd["error"];
+                //$file_size = $fileupd["size"];
                  
                 $image = dirname(__FILE__) . "/views/img/image_logo.dat";
                 //$image_type = "";
@@ -134,7 +154,7 @@ class MpGoogleAddress extends Module
             /**
              * Get Google map values
              */
-            $api_key = strval(Tools::getValue('MPGOOGLEADDRESS_KEY'));
+            $api_key = (string)(Tools::getValue('MPGOOGLEADDRESS_KEY'));
             Configuration::updateValue('MPGOOGLEADDRESS_KEY', $api_key);
             $show = (bool)(Tools::getValue('MPGOOGLEADDRESS_SHOW'));
             Configuration::updateValue('MPGOOGLEADDRESS_SHOW', $show);
@@ -144,13 +164,13 @@ class MpGoogleAddress extends Module
             /**
              * Get Print Labels values
              */
-            $labelWidth     = strval(Tools::getValue('MP_PRINTLABELS_WIDTH'));
-            $labelHeight    = strval(Tools::getValue('MP_PRINTLABELS_HEIGHT'));
-            $labelLogo      = strval(Tools::getValue('MP_PRINTLABELS_LOGO'));
-            $labelExt       = strval(Tools::getValue('MP_PRINTLABELS_EXT'));
-            $labelPhone     = strval(Tools::getValue('MP_PRINTLABELS_PHONE'));
-            $labelMobile    = strval(Tools::getValue('MP_PRINTLABELS_MOBILE'));
-            $labelOrder     = strval(Tools::getValue('MP_PRINTLABELS_ORDER'));
+            $labelWidth     = (string)(Tools::getValue('MP_PRINTLABELS_WIDTH'));
+            $labelHeight    = (string)(Tools::getValue('MP_PRINTLABELS_HEIGHT'));
+            $labelLogo      = (string)(Tools::getValue('MP_PRINTLABELS_LOGO'));
+            $labelExt       = (string)(Tools::getValue('MP_PRINTLABELS_EXT'));
+            $labelPhone     = (string)(Tools::getValue('MP_PRINTLABELS_PHONE'));
+            $labelMobile    = (string)(Tools::getValue('MP_PRINTLABELS_MOBILE'));
+            $labelOrder     = (string)(Tools::getValue('MP_PRINTLABELS_ORDER'));
 
             Configuration::updateValue('MP_PRINTLABELS_WIDTH', $labelWidth);
             Configuration::updateValue('MP_PRINTLABELS_HEIGHT', $labelHeight);

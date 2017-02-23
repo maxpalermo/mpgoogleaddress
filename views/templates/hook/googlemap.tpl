@@ -1,5 +1,5 @@
 {*
-* 2007-2015 PrestaShop
+* 2017 mpSOFT
 *
 * NOTICE OF LICENSE
 *
@@ -17,10 +17,10 @@
 * versions in the future. If you wish to customize PrestaShop for your
 * needs please refer to http://www.prestashop.com for more information.
 *
-*  @author PrestaShop SA <contact@prestashop.com>
-*  @copyright  2007-2016 PrestaShop SA
-*  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
-*  International Registered Trademark & Property of PrestaShop SA
+*  @author    mpSOFT <info@mpsoft.it>
+*  @copyright 2017 mpSOFT Massimiliano Palermo
+*  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+*  International Registered Trademark & Property of mpSOFT
 *}
 
 <style>
@@ -39,21 +39,21 @@
     <div>
         <div style="float: left;" id="addressShippingCustomer">
             <img src='../modules/mpgoogleaddress/views/img/user.png'>
-            <strong>{$address_delivery->firstname|upper} {$address_delivery->lastname|upper}</strong><br>
+            <strong>{{$address_delivery->firstname|upper}|escape:'htmlall':'UTF-8'} {{$address_delivery->lastname|upper}|escape:'htmlall':'UTF-8'}</strong><br>
             {if $address_delivery->company}
                 <img src='../modules/mpgoogleaddress/views/img/dot.png'>
-                <strong><i>{$address_delivery->company|upper}</i></strong><br>
+                <strong><i>{{$address_delivery->company|upper}|escape:'htmlall':'UTF-8'}</i></strong><br>
             {/if}
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_delivery->address1}<br>
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_delivery->address1|escape:'htmlall':'UTF-8'}<br>
             {if !empty($address_delivery->address2)}
                 <img src='../modules/mpgoogleaddress/views/img/dot.png'>
-                {$address_delivery->address2}<br>
+                {$address_delivery->address2|escape:'htmlall':'UTF-8'}<br>
             {/if}
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_delivery->postcode} - {$address_delivery->city}<br>
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$state_delivery->name|upper}<br>
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_delivery->country}<br>
-            {if !empty($address_delivery->phone)}<img src='../modules/mpgoogleaddress/views/img/phone.png'> {$address_delivery->phone}<br>{/if}
-            {if !empty($address_delivery->phone_mobile)}<img src='../modules/mpgoogleaddress/views/img/mobile.png'> {$address_delivery->phone_mobile}<br>{/if}
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_delivery->postcode|escape:'htmlall':'UTF-8'} - {$address_delivery->city|escape:'htmlall':'UTF-8'}<br>
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{{$state_delivery->name|upper}|escape:'htmlall':'UTF-8'}<br>
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_delivery->country|escape:'htmlall':'UTF-8'}<br>
+            {if !empty($address_delivery->phone)}<img src='../modules/mpgoogleaddress/views/img/phone.png'> {$address_delivery->phone|escape:'htmlall':'UTF-8'}<br>{/if}
+            {if !empty($address_delivery->phone_mobile)}<img src='../modules/mpgoogleaddress/views/img/mobile.png'> {$address_delivery->phone_mobile|escape:'htmlall':'UTF-8'}<br>{/if}
         </div>
         <div style="float: right;" id="addressShippingButtons">
             
@@ -69,23 +69,23 @@
     <div>
         <div style="float: left;" id="addressInvoiceCustomer">
             <img src='../modules/mpgoogleaddress/views/img/user.png'>
-            <strong>{$address_invoice->firstname|upper} {$address_invoice->lastname|upper}</strong><br>
+            <strong>{{$address_invoice->firstname|upper}|escape:'htmlall':'UTF-8'} {{$address_invoice->lastname|upper}|escape:'htmlall':'UTF-8'}</strong><br>
             {if $address_invoice->company}
                 <img src='../modules/mpgoogleaddress/views/img/dot.png'>
-                <strong><i>{$address_invoice->company|upper}</i></strong><br>
+                <strong><i>{{$address_invoice->company|upper}|escape:'htmlall':'UTF-8'}</i></strong><br>
             {/if}
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_invoice->address1}<br>
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_invoice->address1|escape:'htmlall':'UTF-8'}<br>
             {if !empty($address_invoice->address2)}
                 <img src='../modules/mpgoogleaddress/views/img/dot.png'>
-                {$address_invoice->address2}<br>
+                {$address_invoice->address2|escape:'htmlall':'UTF-8'}<br>
             {/if}
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_invoice->postcode} - {$address_invoice->city}<br>
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$state_invoice->name|upper}<br>
-            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_invoice->country}<br>
-            {if !empty($address_invoice->phone)}<img src='../modules/mpgoogleaddress/views/img/phone.png'> {$address_invoice->phone}<br>{/if}
-            {if !empty($address_invoice->phone_mobile)}<img src='../modules/mpgoogleaddress/views/img/mobile.png'> {$address_invoice->phone_mobile}<br>{/if}
-            {if !empty($address_invoice->dni)}<img src='../modules/mpgoogleaddress/views/img/dni.png'><strong>{$address_invoice->dni|upper}</strong><br>{/if}
-            {if !empty($address_invoice->vat_number)}<img src='../modules/mpgoogleaddress/views/img/vat.png'><strong>{$address_invoice->vat_number}</strong><br>{/if}
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_invoice->postcode|escape:'htmlall':'UTF-8'} - {$address_invoice->city|escape:'htmlall':'UTF-8'}<br>
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{{$state_invoice->name|upper}|escape:'htmlall':'UTF-8'}<br>
+            <img src='../modules/mpgoogleaddress/views/img/dot.png'>{$address_invoice->country|escape:'htmlall':'UTF-8'}<br>
+            {if !empty($address_invoice->phone)}<img src='../modules/mpgoogleaddress/views/img/phone.png'> {$address_invoice->phone|escape:'htmlall':'UTF-8'}<br>{/if}
+            {if !empty($address_invoice->phone_mobile)}<img src='../modules/mpgoogleaddress/views/img/mobile.png'> {$address_invoice->phone_mobile|escape:'htmlall':'UTF-8'}<br>{/if}
+            {if !empty($address_invoice->dni)}<img src='../modules/mpgoogleaddress/views/img/dni.png'><strong>{{$address_invoice->dni|upper}|escape:'htmlall':'UTF-8'}</strong><br>{/if}
+            {if !empty($address_invoice->vat_number)}<img src='../modules/mpgoogleaddress/views/img/vat.png'><strong>{$address_invoice->vat_number|escape:'htmlall':'UTF-8'}</strong><br>{/if}
         </div>
         <div style="float: right;" id="addressInvoiceButtons">
             
@@ -99,11 +99,21 @@
 
 {if $showmap}
 <iframe id='googlemap_delivery' frameborder="0" style="border:0; margin: 0 auto; margin-top: 10px;"
-    src="https://www.google.com/maps/embed/v1/place?key={$api_key}&amp;q={$address_delivery->address1}+{$address_delivery->postcode}+{$address_delivery->city}+{$state_delivery->name}+{$address_delivery->country}" allowfullscreen="">                                                   
+    src="https://www.google.com/maps/embed/v1/place?key={$api_key|escape:'htmlall':'UTF-8'}
+        &amp;q={$address_delivery->address1|escape:'htmlall':'UTF-8'}
+        +{$address_delivery->postcode|escape:'htmlall':'UTF-8'}
+        +{$address_delivery->city|escape:'htmlall':'UTF-8'}
+        +{$state_delivery->name|escape:'htmlall':'UTF-8'}
+        +{$address_delivery->country|escape:'htmlall':'UTF-8'}" allowfullscreen="">                                                   
 </iframe>
 
 <iframe id='googlemap_invoice' frameborder="0" style="border:0; margin: 0 auto; margin-top: 10px;"
-    src="https://www.google.com/maps/embed/v1/place?key={$api_key}&amp;q={$address_delivery->address1}+{$address_delivery->postcode}+{$address_delivery->city}+{$state_delivery->name}+{$address_delivery->country}" allowfullscreen="">                                                   
+    src="https://www.google.com/maps/embed/v1/place?key={$api_key|escape:'htmlall':'UTF-8'}
+        &amp;q={$address_delivery->address1|escape:'htmlall':'UTF-8'}
+        +{$address_delivery->postcode|escape:'htmlall':'UTF-8'}
+        +{$address_delivery->city|escape:'htmlall':'UTF-8'}
+        +{$state_delivery->name|escape:'htmlall':'UTF-8'}
+        +{$address_delivery->country|escape:'htmlall':'UTF-8'}" allowfullscreen="">                                                   
 </iframe>
 {/if}
 
@@ -167,9 +177,9 @@
         
         $("#printLabelShipping").on("click",function(e){
             e.preventDefault();
-            var url = "{$http}{$host}{$base}/modules/mpgoogleaddress/views/ajax/createLabel.php";
+            var url = "{$http|escape:'htmlall':'UTF-8'}{$host|escape:'htmlall':'UTF-8'}{$base|escape:'htmlall':'UTF-8'}/modules/mpgoogleaddress/views/ajax/createLabel.php";
             var data = {
-                        'id_order':"{$id_order}",
+                        'id_order':"{$id_order|escape:'htmlall':'UTF-8'}",
                         'address_type': 'shipping'
                        };
             $.getJSON(url,data,function(response){
@@ -180,9 +190,9 @@
         $("#printLabelInvoice").on("click",function(e){
             e.preventDefault();
             e.preventDefault();
-            var url = "{$http}{$host}{$base}/modules/mpgoogleaddress/views/ajax/createLabel.php";
+            var url = "{$http|escape:'htmlall':'UTF-8'}{$host|escape:'htmlall':'UTF-8'}{$base|escape:'htmlall':'UTF-8'}/modules/mpgoogleaddress/views/ajax/createLabel.php";
             var data = {
-                        'id_order':"{$id_order}",
+                        'id_order':"{$id_order|escape:'htmlall':'UTF-8'}",
                         'address_type': 'invoice'
                        };
             $.getJSON(url,data,function(response){
