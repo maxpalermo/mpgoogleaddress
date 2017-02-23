@@ -95,7 +95,7 @@ class MpGoogleAddress extends Module
             /**
              * Save Logo
              */
-            if(!empty($_FILES) && $_FILES['MP_PRINTLABELS_FILE']['error']==0) {
+            if (!empty($_FILES) && $_FILES['MP_PRINTLABELS_FILE']['error']==0) {
                 $fileupd = $_FILES['MP_PRINTLABELS_FILE'];
                 $file_name = $fileupd["name"];
                 $file_type = $fileupd["type"];
@@ -105,12 +105,12 @@ class MpGoogleAddress extends Module
                  
                 $image = dirname(__FILE__) . "/views/img/image_logo.dat";
                 //$image_type = "";
-                //if(strpos($file_type,"png")){$image = dirname(__FILE__) . "/image_logo.png";$image_type="png";}
-                //if(strpos($file_type,"jpeg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
-                //if(strpos($file_type,"jpg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
-                //if(strpos($file_type,"gif")){$image = dirname(__FILE__) . "/image_logo.gif";$image_type="gif";}
+                //if (strpos($file_type,"png")){$image = dirname(__FILE__) . "/image_logo.png";$image_type="png";}
+                //if (strpos($file_type,"jpeg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
+                //if (strpos($file_type,"jpg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
+                //if (strpos($file_type,"gif")){$image = dirname(__FILE__) . "/image_logo.gif";$image_type="gif";}
                 
-                if(!empty($image))
+                if (!empty($image))
                 {
                     if (move_uploaded_file($file_tmp_name, $image)) 
                     {

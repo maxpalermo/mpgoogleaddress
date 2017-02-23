@@ -39,8 +39,12 @@ if ($addr_type=='invoice') {
 
 $stateObj   = new StateCore($addressObj->id_state);
 $file       = _PS_MODULE_DIR_ . "mpgoogleaddress/pdf/label.pdf";
-if($PageWidth<10){$PageWidth=100;}
-if($PageHeight<10){$PageHeight=100;}
+if ($PageWidth<10) {
+    $PageWidth=100;
+}
+if ($PageHeight<10) {
+    $PageHeight=100;
+}
 $pageSize   = [$PageWidth,$PageHeight];
 $pdf        = new TCPDF("P", "mm", $pageSize, true, "UTF-8", false, false);
 
@@ -51,17 +55,16 @@ $pdf->setCellMargins(0, 5, 0, 5);
 $pdf->setCellPaddings(5, 5, 5, 5);
 
 //LABEL
-if(!empty($ShowLogo) || $ShowLogo==true)
+if (!empty($ShowLogo) || $ShowLogo==true)
 {
     $prop = $imageSize[0]/$imageSize[1]; // [0]=Width, [1]=Height
     $w = $PageWidth*90/100;
     $h = $w/$prop;
-    $pdf->image($Logo,$PageWidth*5/100,5,$w);
+    $pdf->image($Logo, $PageWidth*5/100, 5, $w);
     $pdf->SetY($pdf->GetY() + $h - 5);
 }
 
-if(1==2)
-{
+if (1==2) {
     print "<pre>";
     print "\nwidth=".$PageWidth;
     print "\nheight=".$PageHeight;
@@ -82,85 +85,72 @@ if(1==2)
 //DEST
 $posY = $pdf->GetY();
 $pdf->SetFont("helvetica", "B", "10");
-$pdf->Cell(100, 0, "DEST", 0, 0, "L", false, "", 1, false, "C","C");
+$pdf->Cell(100, 0, "DEST", 0, 0, "L", false, "", 1, false, "C", "C");
 $pdf->ln(6);
 $pdf->SetFont("helvetica", "B", "18");
-if(!empty($addressObj->company))
-{
+if (!empty($addressObj->company)) {
     //COMPANY
     $pdf->SetFont("helvetica", "B", "14");
-    $pdf->Cell(100, 5, strtoupper($addressObj->company), 0, 0, "L", false, "", 1, false, "C","C");
+    $pdf->Cell(100, 5, strtoupper($addressObj->company), 0, 0, "L", false, "", 1, false, "C", "C");
     $pdf->ln(6);
     //NAME
     $pdf->SetFont("helvetica", "B", "10");
-    $pdf->Cell(100, 5, strtoupper($addressObj->firstname . " " . $addressObj->lastname), 0, 0, "L", false, "", 1, false, "C","C");
+    $pdf->Cell(100, 5, strtoupper($addressObj->firstname . " " . $addressObj->lastname), 0, 0, "L", false, "", 1, false, "C", "C");
     $pdf->ln(6);
-}
-else
-{
+} else {
     //NAME
     $pdf->SetFont("helvetica", "B", "18");
-    $pdf->Cell(100, 5, strtoupper($addressObj->firstname . " " . $addressObj->lastname), 0, 0, "L", false, "", 1, false, "C","C");
+    $pdf->Cell(100, 5, strtoupper($addressObj->firstname . " " . $addressObj->lastname), 0, 0, "L", false, "", 1, false, "C", "C");
     $pdf->ln(6);
 }
 
 //ADDRESS
 $pdf->SetFont("helvetica", "", "14");
-$pdf->Cell(100, 5, $addressObj->address1, 0, 0, "L", false, "", 1, false, "C","C");
+$pdf->Cell(100, 5, $addressObj->address1, 0, 0, "L", false, "", 1, false, "C", "C");
 $pdf->ln(6);
-if(!empty($addressObj->address2))
-{
-    $pdf->Cell(100, 5, $addressObj->address2, 0, 0, "L", false, "", 1, false, "C","C");
+if (!empty($addressObj->address2)) {
+    $pdf->Cell(100, 5, $addressObj->address2, 0, 0, "L", false, "", 1, false, "C", "C");
     $pdf->ln(6);
 }
 //POSTCODE
-$pdf->Cell(100, 5, $addressObj->postcode . " " . $addressObj->city, 0, 0, "L", false, "", 1, false, "C","C");
+$pdf->Cell(100, 5, $addressObj->postcode . " " . $addressObj->city, 0, 0, "L", false, "", 1, false, "C", "C");
 $pdf->ln(6);
 //STATE
-$pdf->Cell(100, 5, $stateObj->name . " " . $stateObj->iso_code, 0, 0, "L", false, "", 1, false, "C","C");
+$pdf->Cell(100, 5, $stateObj->name . " " . $stateObj->iso_code, 0, 0, "L", false, "", 1, false, "C", "C");
 $pdf->ln(6);
 
-if($ShowPhone || $ShowMobile || $ShowOrder)
-{
+if ($ShowPhone || $ShowMobile || $ShowOrder) {
     $pdf->Line(10, $pdf->GetY()+3.5, $PageWidth-10, $pdf->GetY()+3.5);
     $pdf->ln(4);
 }
 
-if($ShowPhone && $ShowMobile)
-{
+if ($ShowPhone && $ShowMobile) {
     $pdf->SetFontSize(12);
-    if($addressObj->phone==$addressObj->phone_mobile)
+    if ($addressObj->phone==$addressObj->phone_mobile)
     {
-        $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C","C");
+        $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
+    } else {
+        $pdf->Cell(100, 5, "TEL: " . $addressObj->phone . ", CELL: " . $addressObj->phone_mobile, 0, 0, "L", false, "", 1, false, "C", "C");
     }
-    else
-    {
-        $pdf->Cell(100, 5, "TEL: " . $addressObj->phone . ", CELL: " . $addressObj->phone_mobile, 0, 0, "L", false, "", 1, false, "C","C");
-    }
-}
-else if($ShowPhone)
-{
+} else if ($ShowPhone) {
     $pdf->SetFontSize(12);
-    $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C","C");
+    $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
     $pdf->ln(4);
-}
-else if($ShowMobile)
-{
+} else if ($ShowMobile) {
     $pdf->SetFontSize(12);
-    $pdf->Cell(100, 5, "CELL: " . $addressObj->phone_mobile, 0, 0, "L", false, "", 0, false, "C","C");
+    $pdf->Cell(100, 5, "CELL: ".$addressObj->phone_mobile, 0, 0, "L", false, "", 0, false, "C", "C");
     $pdf->ln(4);
 }
 
-if($ShowOrder)
-{
+if ($ShowOrder) {
     //$pdf->sety($PageHeight-10);
     $pdf->SetY($posY);
     $pdf->SetFont("helvetica", "B", "10");
-    $pdf->Cell(90, 5, "ORDINE: " . $orderObj->reference, 0, 0, "R", false, "", 0, false, "C","C");
+    $pdf->Cell(90, 5, "ORDINE: ".$orderObj->reference, 0, 0, "R", false, "", 0, false, "C", "C");
 }
 
 $pdf->lastPage();
-$pdf->Output($file,"F");
+$pdf->Output($file, "F");
 chmod($file, 0775);
 
 $response = ['url' => "../modules/mpgoogleaddress/pdf/label.pdf"];
