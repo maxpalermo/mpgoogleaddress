@@ -34,7 +34,7 @@
         display: inline-block;
     }
 </style>
-
+<input type="hidden" id="address_id_order" value="{$address_id_order|escape:'htmlall':'UTF-8'}">
 <div id="addressShippingData">
     <div>
         <div style="float: left;" id="addressShippingCustomer">
@@ -146,7 +146,7 @@
         /**
          * Remove old shipping panel
          */
-        $("#addressShipping .well").remove();
+        $("#addressShipping .well").hide();
         /**
          * Add new shipping panel
          */
@@ -162,7 +162,7 @@
         /**
          * Remove old invoice panel
          */
-        $("#addressInvoice .well").remove();
+        $("#addressInvoice .well").hide();
         /**
          * Add new invoice panel
          */
@@ -179,7 +179,7 @@
             e.preventDefault();
             var url = "{$http|escape:'htmlall':'UTF-8'}{$host|escape:'htmlall':'UTF-8'}{$base|escape:'htmlall':'UTF-8'}/modules/mpgoogleaddress/views/ajax/createLabel.php";
             var data = {
-                        'id_order':"{$id_order|escape:'htmlall':'UTF-8'}",
+                        'id_order': $('#address_id_order').val(),
                         'address_type': 'shipping'
                        };
             $.getJSON(url,data,function(response){
@@ -192,7 +192,7 @@
             e.preventDefault();
             var url = "{$http|escape:'htmlall':'UTF-8'}{$host|escape:'htmlall':'UTF-8'}{$base|escape:'htmlall':'UTF-8'}/modules/mpgoogleaddress/views/ajax/createLabel.php";
             var data = {
-                        'id_order':"{$id_order|escape:'htmlall':'UTF-8'}",
+                        'id_order': $('#address_id_order').val(),
                         'address_type': 'invoice'
                        };
             $.getJSON(url,data,function(response){
