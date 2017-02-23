@@ -41,8 +41,8 @@ $PageWidth  = Configuration::get('MP_PRINTLABELS_WIDTH'); //millimeters
 $PageHeight = Configuration::get('MP_PRINTLABELS_HEIGHT'); //millimeters
 $ShowLogo   = Configuration::get('MP_PRINTLABELS_LOGO');
 $LogoExt    = Configuration::get('MP_PRINTLABELS_EXT');
-$Logo       = dirname(__FILE__) . DIRECTORY_SEPARATOR 
-                                . ".." . DIRECTORY_SEPARATOR . "img" 
+$Logo       = dirname(__FILE__) . DIRECTORY_SEPARATOR . ".."
+                                . DIRECTORY_SEPARATOR . "img"
                                 . DIRECTORY_SEPARATOR . "image_logo.dat";
 $imageSize  = getimagesize($Logo);
 $ShowPhone  = Configuration::get('MP_PRINTLABELS_PHONE');
@@ -108,6 +108,7 @@ $pdf->SetFont("helvetica", "B", "10");
 $pdf->Cell(100, 0, "DEST", 0, 0, "L", false, "", 1, false, "C", "C");
 $pdf->ln(6);
 $pdf->SetFont("helvetica", "B", "18");
+$name = $addressObj->firstname . " " . $addressObj->lastname;
 if (!empty($addressObj->company)) {
     //COMPANY
     $pdf->SetFont("helvetica", "B", "14");
@@ -115,14 +116,12 @@ if (!empty($addressObj->company)) {
     $pdf->ln(6);
     //NAME
     $pdf->SetFont("helvetica", "B", "10");
-    $pdf->Cell(100, 5, Tools::strtoupper($addressObj->firstname . " " . $addressObj->lastname)
-            , 0, 0, "L", false, "", 1, false, "C", "C");
+    $pdf->Cell(100, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
     $pdf->ln(6);
 } else {
     //NAME
     $pdf->SetFont("helvetica", "B", "18");
-    $pdf->Cell(100, 5, Tools::strtoupper($addressObj->firstname . " " . $addressObj->lastname)
-            , 0, 0, "L", false, "", 1, false, "C", "C");
+    $pdf->Cell(100, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
     $pdf->ln(6);
 }
 
@@ -151,8 +150,9 @@ if ($ShowPhone && $ShowMobile) {
     if ($addressObj->phone==$addressObj->phone_mobile) {
         $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
     } else {
-        $pdf->Cell(100, 5, "TEL: " . $addressObj->phone . ", CELL: " . $addressObj->phone_mobile
-                , 0, 0, "L", false, "", 1, false, "C", "C");
+        $phone = $addressObj->phone;
+        $phone_mobile = $addressObj->phone_mobile;
+        $pdf->Cell(100, 5, "TEL: " . $phone . ", CELL: " . $phone_mobile, 0, 0, "L", false, "", 1, false, "C", "C");
     }
 } elseif ($ShowPhone) {
     $pdf->SetFontSize(12);

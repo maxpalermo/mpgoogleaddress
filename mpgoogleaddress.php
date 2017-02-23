@@ -45,12 +45,10 @@ class MpGoogleAddress extends Module
         $this->module_key = '9d375a6411ac69cd994ead6338cc5f6d';
 
         parent::__construct();
-
+        
         $this->displayName = $this->l('Google address viewer with label print');
-        $this->description = 
-                $this->l('With this module, you are able to to improve the customer'
-                        . ' address visualization and to print shipping label');
-
+        $this->description =
+            $this->l('Enhance customer address visualization and print shipping label');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
     }
   
@@ -60,8 +58,8 @@ class MpGoogleAddress extends Module
             Shop::setContext(Shop::CONTEXT_ALL);
         }
 
-        if (!parent::install() 
-                || !$this->registerHook('displayAdminOrder') 
+        if (!parent::install()
+                || !$this->registerHook('displayAdminOrder')
                 || !$this->registerHook('displayBackOfficeHeader')) {
             return false;
         }
