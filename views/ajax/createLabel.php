@@ -76,8 +76,7 @@ $pdf->setCellMargins(0, 5, 0, 5);
 $pdf->setCellPaddings(5, 5, 5, 5);
 
 //LABEL
-if (!empty($ShowLogo) || $ShowLogo==true)
-{
+if (!empty($ShowLogo) || $ShowLogo==true) {
     $prop = $imageSize[0]/$imageSize[1]; // [0]=Width, [1]=Height
     $w = $PageWidth*90/100;
     $h = $w/$prop;
@@ -147,8 +146,7 @@ if ($ShowPhone || $ShowMobile || $ShowOrder) {
 
 if ($ShowPhone && $ShowMobile) {
     $pdf->SetFontSize(12);
-    if ($addressObj->phone==$addressObj->phone_mobile)
-    {
+    if ($addressObj->phone==$addressObj->phone_mobile) {
         $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
     } else {
         $pdf->Cell(100, 5, "TEL: " . $addressObj->phone . ", CELL: " . $addressObj->phone_mobile, 0, 0, "L", false, "", 1, false, "C", "C");

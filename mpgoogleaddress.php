@@ -27,7 +27,9 @@
  *
  */
 
-if (!defined('_PS_VERSION_')){exit;}
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
  
 class MpGoogleAddress extends Module
 {
@@ -36,32 +38,30 @@ class MpGoogleAddress extends Module
     
     public function __construct()
     {
-      $this->name = 'mpgoogleaddress';
-      $this->tab = 'administration';
-      $this->version = '1.2.1';
-      $this->author = 'mpsoft';
-      $this->need_instance = 0;
-      $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_); 
-      $this->bootstrap = true;
+        $this->name = 'mpgoogleaddress';
+        $this->tab = 'administration';
+        $this->version = '1.2.1';
+        $this->author = 'mpsoft';
+        $this->need_instance = 0;
+        $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
+        $this->bootstrap = true;
 
-      parent::__construct();
+        parent::__construct();
 
-      $this->displayName = $this->l('Google address viewer with label print');
-      $this->description = $this->l('With this module, you are able to to improve the customer address visualization and to print shipping label');
+        $this->displayName = $this->l('Google address viewer with label print');
+        $this->description = $this->l('With this module, you are able to to improve the customer address visualization and to print shipping label');
 
-      $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
+        $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
     }
   
     public function install()
     {
-        if (Shop::isFeatureActive())
-        {
-          Shop::setContext(Shop::CONTEXT_ALL);
+        if (Shop::isFeatureActive()) {
+            Shop::setContext(Shop::CONTEXT_ALL);
         }
 
-        if (!parent::install() || !$this->registerHook('displayAdminOrder') || !$this->registerHook('displayBackOfficeHeader')) 
-        {
-          return false;
+        if (!parent::install() || !$this->registerHook('displayAdminOrder') || !$this->registerHook('displayBackOfficeHeader')) {
+            return false;
         }
         return true;
     }
@@ -72,7 +72,7 @@ class MpGoogleAddress extends Module
             && ConfigurationCore::deleteByName('MPGOOGLEADDRESS_PRINT')
             && ConfigurationCore::deleteByName('MPGOOGLEADDRESS_SHOW')
             && ConfigurationCore::deleteByName('MPGOOGLEADDRESS_KEY')) {
-          return false;
+            return false;
         }
         return true;
     }
@@ -110,8 +110,7 @@ class MpGoogleAddress extends Module
     {
         $output = null;
 
-        if (Tools::isSubmit('submit_form'))
-        {
+        if (Tools::isSubmit('submit_form')) {
             /**
              * Save Logo
              */
@@ -132,7 +131,7 @@ class MpGoogleAddress extends Module
                 
                 if (!empty($image))
                 {
-                    if (move_uploaded_file($file_tmp_name, $image)) 
+                    if (move_uploaded_file($file_tmp_name, $image))
                     {
                         //set permissions
                         chmod($image,0775);
