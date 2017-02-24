@@ -177,7 +177,7 @@
         
         $("#printLabelShipping").on("click",function(e){
             e.preventDefault();
-            var url = "{$http|escape:'htmlall':'UTF-8'}{$host|escape:'htmlall':'UTF-8'}{$base|escape:'htmlall':'UTF-8'}/modules/mpgoogleaddress/views/ajax/createLabel.php";
+            var url = "{$ajax_folder|escape:'htmlall':'UTF-8'}createLabel.php";
             var data = {
                         'id_order': $('#address_id_order').val(),
                         'address_type': 'shipping'
@@ -190,7 +190,7 @@
         $("#printLabelInvoice").on("click",function(e){
             e.preventDefault();
             e.preventDefault();
-            var url = "{$http|escape:'htmlall':'UTF-8'}{$host|escape:'htmlall':'UTF-8'}{$base|escape:'htmlall':'UTF-8'}/modules/mpgoogleaddress/views/ajax/createLabel.php";
+            var url = "{$ajax_folder|escape:'htmlall':'UTF-8'}createLabel.php";
             var data = {
                         'id_order': $('#address_id_order').val(),
                         'address_type': 'invoice'

@@ -3,7 +3,6 @@
 global $_MODULE;
 $_MODULE = array();
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_598d2db45a7eb280386e18a6fd86b68f'] = 'Visualizzatore indirizzi e stampa etichette';
-$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_3b179d9bd4e70981c81cec8f729bc31a'] = 'Con questo modulo, potrai migliorare la visualizzazione degli indirizzi e stampare le etichette di spedizione.';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_876f23178c29dc2552c0b48bf23cd9bd'] = 'Sei sicuro di volere disinstallare?';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_c888438d14855d7d96a2724ee9c306bd'] = 'Impostazioni aggiornate';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_f4f70727dc34561dfde1a3c529b6205c'] = 'Impostazioni';

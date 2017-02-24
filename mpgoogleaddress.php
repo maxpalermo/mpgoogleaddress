@@ -59,8 +59,7 @@ class MpGoogleAddress extends Module
         }
 
         if (!parent::install()
-                || !$this->registerHook('displayAdminOrder')
-                || !$this->registerHook('displayBackOfficeHeader')) {
+                || !$this->registerHook('displayAdminOrder')) {
             return false;
         }
         return true;
@@ -75,13 +74,6 @@ class MpGoogleAddress extends Module
             return false;
         }
         return true;
-    }
-    
-    public function hookDisplayBackOfficeHeader($params)
-    {
-        //$this->context->controller->addCSS($this->_path.'css/css.css', 'all');
-        $backOfficeJS = $this->_path . 'views/js/backOfficeHeader.js';
-        $this->context->controller->addJS($backOfficeJS);
     }
     
     public function hookDisplayAdminOrder($params)
@@ -100,9 +92,7 @@ class MpGoogleAddress extends Module
         $this->context->smarty->assign('api_key', Configuration::get('MPGOOGLEADDRESS_KEY'));
         $this->context->smarty->assign('showmap', Configuration::get('MPGOOGLEADDRESS_SHOW'));
         $this->context->smarty->assign('printlabel', Configuration::get('MPGOOGLEADDRESS_PRINT'));
-        $this->context->smarty->assign('http', $this->getHTTP());
-        $this->context->smarty->assign('host', $_SERVER['HTTP_HOST']);
-        $this->context->smarty->assign('base', $_SERVER['REWRITEBASE']);
+        $this->context->smarty->assign('ajax_folder', $this->getViewsPath() . 'ajax/');
         $this->smarty->assign('address_id_order', Context::getContext()->controller->tpl_view_vars['order']->id);
         return $this->display(__FILE__, $file);
     }
@@ -412,18 +402,62 @@ class MpGoogleAddress extends Module
         $helper->fields_value['MP_PRINTLABELS_MOBILE'] = Configuration::get('MP_PRINTLABELS_MOBILE');
         $helper->fields_value['MP_PRINTLABELS_ORDER'] = Configuration::get('MP_PRINTLABELS_ORDER');
 
-        return $helper->generateForm($fields_form);
+        return $helper->generateForm($fields_form) . $this->addJS();
+    }
+    
+    private function addJS()
+    {
+        return '<script type="text/javascript">'. PHP_EOL .
+                '$(document).ready(function() ' . PHP_EOL .
+                    '{' . PHP_EOL .
+                        '//accept only image'. PHP_EOL .
+                        '$("#MP_PRINTLABELS_FILE").attr("accept","image/*");'. PHP_EOL .
+                    '});'. PHP_EOL .
+                '</script>';
     }
     
     /**
-     * Check if HTTPS is activated
-     * @return string
+     * Get the root payh of site
      */
-    private function getHTTP()
+    private function getRootPath()
     {
-        if (empty($_SERVER['HTTPS'])) {
-            return "http://";
+        $base = $this->addEndingSlash(filter_input(INPUT_SERVER, 'REWRITEBASE'));
+        if (Tools::getProtocol()=='http') {
+            $url = _PS_BASE_URL_ . $base;
+        } else {
+            $url = _PS_BASE_URL_SSL_ . $base;
         }
-        return 'https://';
+        return $this->addEndingSlash($url);
+    }
+    
+    /**
+     * 
+     * @return string full url /modules
+     */
+    private function getModulePath()
+    {
+        $module = $this->getRootPath() . 'modules/';
+        return $module;
+    }
+    
+    /**
+     * 
+     * @return string full url /views
+     */
+    private function getViewsPath()
+    {
+        $module = $this->addEndingSlash($this->name);
+        return $this->addEndingSlash($this->getModulePath()) . $module . "views/";
+    }
+    
+    private function addEndingSlash($path)
+    {
+        $slash_type = (strpos($path, '\\')===0) ? 'win' : 'unix';
+        $last_char = Tools::substr($path, Tools::strlen($path)-1, 1);
+        if ($last_char != '/' and $last_char != '\\') {
+            // no slash:
+            $path .= ($slash_type == 'win') ? '\\' : '/';
+        }
+        return $path;
     }
 }
