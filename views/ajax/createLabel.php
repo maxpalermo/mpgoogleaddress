@@ -23,8 +23,6 @@
  *  @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  International Registered Trademark & Property of mpSOFT
  */
-
-header('Access-Control-Allow-Origin: *');
 header("Content-type: application/json");
 
 $config_path = dirname(__FILE__).'/../../../../config/config.inc.php';

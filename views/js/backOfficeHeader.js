@@ -23,5 +23,5 @@
 */
 
 $(document).ready(function(){
-    
+    $("#MP_PRINTLABELS_FILE").prop("accept","*,jpg,*.png,*.gif,*,jpeg");
 });

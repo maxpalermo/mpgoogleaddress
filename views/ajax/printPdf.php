@@ -24,7 +24,7 @@
  *  International Registered Trademark & Property of mpSOFT
  */
 
-$file = (dirname(__FILE__) . "/../pdf/label.pdf");
+$file = (dirname(__FILE__) . "/../../pdf/label.pdf");
 
 header('Content-Description: File Transfer');
 header('Content-Type: application/pdf');

@@ -177,27 +177,23 @@
         
         $("#printLabelShipping").on("click",function(e){
             e.preventDefault();
-            var url = "{$ajax_folder|escape:'htmlall':'UTF-8'}createLabel.php";
-            var data = {
-                        'id_order': $('#address_id_order').val(),
-                        'address_type': 'shipping'
-                       };
-            $.getJSON(url,data,function(response){
-                window.open(response.url);
-            });
+            printLabelAddress('shipping');
         });
         
         $("#printLabelInvoice").on("click",function(e){
             e.preventDefault();
-            e.preventDefault();
-            var url = "{$ajax_folder|escape:'htmlall':'UTF-8'}createLabel.php";
-            var data = {
-                        'id_order': $('#address_id_order').val(),
-                        'address_type': 'invoice'
-                       };
-            $.getJSON(url,data,function(response){
-                window.open(response.url);
-            });
+            printLabelAddress('invoice');
         });
     });
+    function printLabelAddress(type)
+    {
+        var url = "../modules/mpgoogleaddress/views/ajax/createLabel.php";
+        var data = '?id_order=' + $('#address_id_order').val()
+                 + '&address_type='+type
+                 + '&callback=?';
+        $.getJSON(url+data)
+        .always(function() {
+                window.open("../modules/mpgoogleaddress/pdf/label.pdf");
+        });
+    }
 </script>
