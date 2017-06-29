@@ -187,6 +187,33 @@
     });
     function printLabelAddress(type)
     {
+        $.ajax({
+            type: 'POST',
+            //dataType: 'json',
+            url: '{$ajax_url|escape:'htmlall':'UTF-8'}',
+            useDefaultXhrHeader: false,
+            data: 
+            {
+                token: '{$token|escape:'htmlall':'UTF-8'}',
+                ajax: true,
+                action: 'CreateLabel',
+                id_order: $('#address_id_order').val(),
+                address_type: type
+            }
+        })
+        .done(function(result){
+            console.log(result);
+            window.open(result.url);
+        })
+        .fail(function(){
+            console.log('fail');
+        });
+        
+        
+        
+    }
+    function printLabelAddress2(type)
+    {
         var url = "../modules/mpgoogleaddress/views/ajax/createLabel.php";
         var data = '?id_order=' + $('#address_id_order').val()
                  + '&address_type='+type

@@ -37,8 +37,8 @@ class MpGoogleAddress extends Module
     {
         $this->name = 'mpgoogleaddress';
         $this->tab = 'administration';
-        $this->version = '1.2.4';
-        $this->author = 'mpsoft';
+        $this->version = '1.4.1';
+        $this->author = 'mpSoft Massimiliano Palermo';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
         $this->bootstrap = true;
@@ -50,6 +50,10 @@ class MpGoogleAddress extends Module
         $this->description =
             $this->l('Enhance customer address visualization and print shipping label');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
+        
+        if (!defined('MP_LABEL_LOGO')) {
+            define('MP_LABEL_LOGO', dirname(__FILE__) . '/image_logo.dat');
+        }
     }
   
     public function install()
@@ -86,6 +90,7 @@ class MpGoogleAddress extends Module
     
     public function hookDisplayAdminOrder($params)
     {
+        $link = $this->context->link;
         $file = '/views/templates/hook/googlemap.tpl';
         $id_order = (int)Tools::getValue('id_order');
         $order = new OrderCore($id_order);
@@ -101,8 +106,8 @@ class MpGoogleAddress extends Module
         $this->context->smarty->assign('showmap', Configuration::get('MPGOOGLEADDRESS_SHOW'));
         $this->context->smarty->assign('printlabel', Configuration::get('MPGOOGLEADDRESS_PRINT'));
         $this->context->smarty->assign('http', $this->getHTTP());
-        $this->context->smarty->assign('host', $_SERVER['HTTP_HOST']);
-        $this->context->smarty->assign('base', $_SERVER['REWRITEBASE']);
+        $this->context->smarty->assign('ajax_url', $link->getModuleLink('mpgoogleaddress', 'OrderPrintLabel'));
+        $this->context->smarty->assign('token', Tools::getAdminTokenLite('AdminOrders'));
         $this->smarty->assign('address_id_order', Context::getContext()->controller->tpl_view_vars['order']->id);
         return $this->display(__FILE__, $file);
     }
@@ -123,7 +128,7 @@ class MpGoogleAddress extends Module
                 //$file_error = $fileupd["error"];
                 //$file_size = $fileupd["size"];
                  
-                $image = dirname(__FILE__) . "/views/img/image_logo.dat";
+                $image = MP_LABEL_LOGO; //dirname(__FILE__) . "/views/img/image_logo.dat";
                 //$image_type = "";
                 //if (strpos($file_type,"png")){$image = dirname(__FILE__) . "/image_logo.png";$image_type="png";}
                 //if (strpos($file_type,"jpeg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
@@ -140,7 +145,6 @@ class MpGoogleAddress extends Module
                         $this->image_url = "";
                         $this->img_size  = 0;
                     }
-                    
                 } else {
                     $this->generateThumb();
                 }
@@ -192,7 +196,7 @@ class MpGoogleAddress extends Module
         $default_lang = (int)Configuration::get('PS_LANG_DEFAULT');
 
         // Init Fields form array
-        $fields_form = [];
+        $fields_form = array();
         $fields_form[0]['form'] = array(
             'legend' => array(
                 'title' => $this->l('Settings'),
