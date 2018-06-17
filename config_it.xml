@@ -2,9 +2,9 @@
 <module>
 	<name>mpgoogleaddress</name>
 	<displayName><![CDATA[Visualizzatore indirizzi e stampa etichette]]></displayName>
-	<version><![CDATA[1.2.4]]></version>
-	<description><![CDATA[Enhance customer address visualization and print shipping label]]></description>
-	<author><![CDATA[mpsoft]]></author>
+	<version><![CDATA[1.4.4]]></version>
+	<description><![CDATA[Migliora la visualizzazione degli indirizzi e stampa l&#039;etichetta]]></description>
+	<author><![CDATA[Digital Solutions&reg;]]></author>
 	<tab><![CDATA[administration]]></tab>
 	<confirmUninstall><![CDATA[Sei sicuro di volere disinstallare?]]></confirmUninstall>
 	<is_configurable>1</is_configurable>

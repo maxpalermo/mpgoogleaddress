@@ -2,11 +2,25 @@
 
 global $_MODULE;
 $_MODULE = array();
+$_MODULE['<{mpgoogleaddress}prestashop>ajax_56195c036139e563b8a9fd6cc3fb6c61'] = 'TOKEN NON VALIDO';
+$_MODULE['<{mpgoogleaddress}prestashop>ajax_33053da11992e3c994d887983bbc6872'] = 'PARAMETRI AJAX NON VALIDI';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_598d2db45a7eb280386e18a6fd86b68f'] = 'Visualizzatore indirizzi e stampa etichette';
-$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_3b179d9bd4e70981c81cec8f729bc31a'] = 'Con questo modulo, potrai migliorare la visualizzazione degli indirizzi e stampare le etichette di spedizione.';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_1516a4c24d7f96a876342dfb04de3079'] = 'Migliora la visualizzazione degli indirizzi e stampa l\'etichetta';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_876f23178c29dc2552c0b48bf23cd9bd'] = 'Sei sicuro di volere disinstallare?';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_d67bcb19162a8085112a80ba8fe8fa2c'] = 'Id ordine non valido';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_8455ff96c0fa82745b74b234d41d4171'] = 'Campo non valido';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_0dd7ab764b92dd93a4aa9c976fc3ba40'] = 'Tipo di indirizzo non valido';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_a871610a9c66ee7473d098fb68fa3096'] = 'Codice Fiscale eliminato';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_2d42f5d9a6d2f96b5575dae7563fde72'] = 'Partita IVA eliminata';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_1e3754651500802c93577e3bc684c516'] = 'Errore durante l\'eliminazione del campo.';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_12388cea1db63325280dc8286bfb029f'] = 'Formato immagine non valida';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_186719c75488ac105a7cd7822f7178f9'] = 'Immagini accettate: jpg/gif/png';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_a29c2b708803bd03034ec9a28cef9ab2'] = 'Inserisci una chiave API per la visualizzazione della mappa';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_c888438d14855d7d96a2724ee9c306bd'] = 'Impostazioni aggiornate';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_6d6470f6abd3124f4842764de96c564b'] = 'Inserisci una grandezza valida per l\'etichetta';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_82276a0e4f57cf89b416259a2f11b808'] = 'Inserisci un\'altezza valida per l\'etichetta';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_f4f70727dc34561dfde1a3c529b6205c'] = 'Impostazioni';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_d876ff8da67c3731ae25d8335a4168b4'] = 'Chiave API';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_80454b0d2e336c778e0792f5f6260012'] = 'Mostra la mappa di Google';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_5cf4a855a87b872e2593dc7e22c6fd07'] = 'Se attivata mostra la mappa di Google';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_7469a286259799e5b37e5db9296f00b3'] = 'SI';
@@ -17,6 +31,7 @@ $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_c9cc8cce247e49bae79f15173
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_9ad0891edb86d648a53b96bdb382d4d4'] = 'Impostazioni stampa etichette';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_e2acb35693af77ba683867a731b4f99e'] = 'Larghezza (mm)';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_0c1667de3027f7d4750390c9dc3873ca'] = 'Altezza (mm)';
+$_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_8c2857a9ad1d8f31659e35e904e20fa6'] = 'Logo';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_036883edf965e52109eaea88d8c692a2'] = 'Se attiva, mostra il logo sull\'etichetta';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_a5220b3d801e803e8c4133edcd0dc7b4'] = 'Seleziona un file:';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_e85739a3b838f4d5c9b700d24e2ebe64'] = 'Estensioni ammesse: jpeg, jpg, png, gif';
@@ -27,4 +42,12 @@ $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_5d90753ee176c29a8776d8973
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_a240fa27925a635b08dc28c9e4f9216d'] = 'Ordine';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_37e18a38a39bade10399dc2ee4b83570'] = 'Se attiva, mostra il numero d\'ordine sull\'etichetta.';
 $_MODULE['<{mpgoogleaddress}prestashop>mpgoogleaddress_630f6dc397fe74e52d5189e2c80f282b'] = 'Indietro';
-$_MODULE['<{mpgoogleaddress}prestashop>googlemap_165977bc8006193936272e96ef4fd7a2'] = 'Stampa etichetta';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_b01e04cb51f8d783d149056fd37eb4ce'] = 'P.IVA';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_f4ec5f57bd4d31b803312d873be40da9'] = 'Cambia';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_af0f5bdc5be121b9307687aeeae38c17'] = 'Indirizzo di consegna';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_601d8c4b9f72fc1862013c19b677a499'] = 'Indirizzo di fatturazione';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_ff6916ce2d7cadea61ce305ff0632f0c'] = 'Rimuovi CF';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_fd7c9e768295f883fa976b7019f6afee'] = 'RImuovi P.IVA';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_121c7958ad5673812be004dd6bcb4dda'] = 'Stampa indirizzo';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_edccfd8b7f08b1addbe3b06bfac73898'] = 'Operazione eseguita';
+$_MODULE['<{mpgoogleaddress}prestashop>addresses_d57bc291dd91143ec683013037ff900e'] = 'Indirizzo cambiato.';

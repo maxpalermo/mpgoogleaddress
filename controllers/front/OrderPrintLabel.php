@@ -30,24 +30,7 @@ require_once(_PS_TOOL_DIR_.'tcpdf/config/lang/eng.php');
 require_once(_PS_TOOL_DIR_.'tcpdf/tcpdf.php');
 
 class MpGoogleAddressOrderPrintLabelModuleFrontController extends ModuleFrontController
-{
-    
-    public function initContent()
-    {
-        parent::initContent();
-    }
-    
-    public function postProcess()
-    {
-        parent::postProcess();
-        
-        if (Tools::isSubmit('ajax')) {
-            $function = 'ajaxProcess' . Tools::getValue('action');
-            call_user_func(array($this, $function));
-        }
-        exit();
-    }
-    
+{   
     public function ajaxProcessCreateLabel()
     {
         $id_order = (int)Tools::getValue('id_order', 0);
@@ -62,14 +45,14 @@ class MpGoogleAddressOrderPrintLabelModuleFrontController extends ModuleFrontCon
         $this->actionPrintLabel($file);
     }
     
-    private function actionCreateLabel($id_order, $addr_type)
+    public function actionCreateLabel($id_order, $addr_type)
     {
         $_PS_BASE_URL_ = Tools::getCurrentUrlProtocolPrefix().Tools::getShopDomain().__PS_BASE_URI__;
         $PageWidth  = Configuration::get('MP_PRINTLABELS_WIDTH'); //millimeters
         $PageHeight = Configuration::get('MP_PRINTLABELS_HEIGHT'); //millimeters
         $ShowLogo   = Configuration::get('MP_PRINTLABELS_LOGO');
         $LogoExt    = Configuration::get('MP_PRINTLABELS_EXT');
-        $Logo       = MP_LABEL_LOGO;
+        $Logo       = Configuration::get('MP_PRINTLABELS_FILE');
         $imageSize  = getimagesize($Logo);
         $ShowPhone  = Configuration::get('MP_PRINTLABELS_PHONE');
         $ShowMobile = Configuration::get('MP_PRINTLABELS_MOBILE');
@@ -129,39 +112,39 @@ class MpGoogleAddressOrderPrintLabelModuleFrontController extends ModuleFrontCon
         //DEST
         $posY = $pdf->GetY();
         $pdf->SetFont("helvetica", "B", "10");
-        $pdf->Cell(100, 0, "DEST", 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->Cell(0, 0, "DEST", 0, 0, "L", false, "", 1, false, "C", "C");
         $pdf->ln(6);
         $pdf->SetFont("helvetica", "B", "18");
         $name = $addressObj->firstname . " " . $addressObj->lastname;
         if (!empty($addressObj->company)) {
             //COMPANY
             $pdf->SetFont("helvetica", "B", "14");
-            $pdf->Cell(100, 5, Tools::strtoupper($addressObj->company), 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->Cell(0, 5, Tools::strtoupper($addressObj->company), 0, 0, "L", false, "", 1, false, "C", "C");
             $pdf->ln(6);
             //NAME
             $pdf->SetFont("helvetica", "B", "10");
-            $pdf->Cell(100, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->Cell(0, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
             $pdf->ln(6);
         } else {
             //NAME
             $pdf->SetFont("helvetica", "B", "18");
-            $pdf->Cell(100, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->Cell(0, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
             $pdf->ln(6);
         }
 
         //ADDRESS
         $pdf->SetFont("helvetica", "", "14");
-        $pdf->Cell(100, 5, $addressObj->address1, 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->Cell(0, 5, $addressObj->address1, 0, 0, "L", false, "", 1, false, "C", "C");
         $pdf->ln(6);
         if (!empty($addressObj->address2)) {
-            $pdf->Cell(100, 5, $addressObj->address2, 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->Cell(0, 5, $addressObj->address2, 0, 0, "L", false, "", 1, false, "C", "C");
             $pdf->ln(6);
         }
         //POSTCODE
-        $pdf->Cell(100, 5, $addressObj->postcode." ".$addressObj->city, 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->Cell(0, 5, $addressObj->postcode." ".$addressObj->city, 0, 0, "L", false, "", 1, false, "C", "C");
         $pdf->ln(6);
         //STATE
-        $pdf->Cell(100, 5, $stateObj->name . " " . $stateObj->iso_code, 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->Cell(0, 5, $stateObj->name . " " . $stateObj->iso_code, 0, 0, "L", false, "", 1, false, "C", "C");
         $pdf->ln(6);
 
         if ($ShowPhone || $ShowMobile || $ShowOrder) {
@@ -172,19 +155,19 @@ class MpGoogleAddressOrderPrintLabelModuleFrontController extends ModuleFrontCon
         if ($ShowPhone && $ShowMobile) {
             $pdf->SetFontSize(12);
             if ($addressObj->phone==$addressObj->phone_mobile) {
-                $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
+                $pdf->Cell(0, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
             } else {
                 $phone = $addressObj->phone;
                 $phone_mobile = $addressObj->phone_mobile;
-                $pdf->Cell(100, 5, "TEL: ".$phone.", CELL: ".$phone_mobile, 0, 0, "L", false, "", 1, false, "C", "C");
+                $pdf->Cell(0, 5, "TEL: ".$phone.", CELL: ".$phone_mobile, 0, 0, "L", false, "", 1, false, "C", "C");
             }
         } elseif ($ShowPhone) {
             $pdf->SetFontSize(12);
-            $pdf->Cell(100, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->Cell(0, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
             $pdf->ln(4);
         } elseif ($ShowMobile) {
             $pdf->SetFontSize(12);
-            $pdf->Cell(100, 5, "CELL: ".$addressObj->phone_mobile, 0, 0, "L", false, "", 0, false, "C", "C");
+            $pdf->Cell(0, 5, "CELL: ".$addressObj->phone_mobile, 0, 0, "L", false, "", 0, false, "C", "C");
             $pdf->ln(4);
         }
 
@@ -196,12 +179,29 @@ class MpGoogleAddressOrderPrintLabelModuleFrontController extends ModuleFrontCon
         }
 
         $pdf->lastPage();
-        $pdf->Output($file, "F");
-        chmod($file, 0775);
+        //$pdf->Output($file, "F");
+        print $pdf->Output();
+        //chmod($file, 0775);
 
-        $response = array('url' => "../modules/mpgoogleaddress/pdf/label.pdf");
+        //$response = array('url' => "../modules/mpgoogleaddress/pdf/label.pdf");
 
-        print Tools::jsonEncode($response);
+        //print Tools::jsonEncode($response);
+        
+        $file =  $pdf->Output();
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename='.basename('label.pdf'));
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        header('Content-Length: ' . strlen($file));
+        ob_clean();
+        flush();
+        print $file;
+        //readfile($file);
+        exit();
+        
     }
     
     private function actionPrintLabel($file)

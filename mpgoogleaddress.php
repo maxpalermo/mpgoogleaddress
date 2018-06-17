@@ -27,7 +27,10 @@
 if (!defined('_PS_VERSION_')) {
     exit;
 }
- 
+
+require_once(_PS_TOOL_DIR_.'tcpdf/config/lang/eng.php');
+require_once(_PS_TOOL_DIR_.'tcpdf/tcpdf.php');
+
 class MpGoogleAddress extends Module
 {
     private $img_url;
@@ -37,8 +40,8 @@ class MpGoogleAddress extends Module
     {
         $this->name = 'mpgoogleaddress';
         $this->tab = 'administration';
-        $this->version = '1.4.1';
-        $this->author = 'mpSoft Massimiliano Palermo';
+        $this->version = '1.4.4';
+        $this->author = 'Digital Solutions®';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = array('min' => '1.6', 'max' => _PS_VERSION_);
         $this->bootstrap = true;
@@ -50,12 +53,40 @@ class MpGoogleAddress extends Module
         $this->description =
             $this->l('Enhance customer address visualization and print shipping label');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
-        
-        if (!defined('MP_LABEL_LOGO')) {
-            define('MP_LABEL_LOGO', dirname(__FILE__) . '/image_logo.dat');
+        $this->context = ContextCore::getContext();
+        if (Tools::isSubmit('ajax')) {
+            $action = 'ajaxProcess'.Tools::ucfirst(Tools::getValue('action'));
+            $this->$action();
         }
     }
-  
+    
+    /**
+     * Return the Admin Template Path
+     * @return string The admin template path
+     */
+    public function getAdminTemplatePath()
+    {
+        return $this->getPath().'views/templates/admin/';
+    }
+
+    /**
+     * Get The URL path of this module
+     * @return string The URL of this module
+     */
+    public function getUrl()
+    {
+        return $this->_path;
+    }
+    
+    /**
+     * Return the physical path of this module
+     * @return string The path of this module
+     */
+    public function getPath()
+    {
+        return $this->local_path;
+    }
+
     public function install()
     {
         if (Shop::isFeatureActive()) {
@@ -72,106 +103,446 @@ class MpGoogleAddress extends Module
     
     public function uninstall()
     {
-        if (!parent::uninstall()
-            && ConfigurationCore::deleteByName('MPGOOGLEADDRESS_PRINT')
-            && ConfigurationCore::deleteByName('MPGOOGLEADDRESS_SHOW')
-            && ConfigurationCore::deleteByName('MPGOOGLEADDRESS_KEY')) {
-            return false;
-        }
-        return true;
+        $db=Db::getInstance();
+        $db->delete('configuration', 'name like \'MP_PRINTLABEL%\'');
+        $db->delete('configuration', 'name like \'MPGOOGLEADDRESS%\'');
+        
+        return parent::uninstall();
     }
     
     public function hookDisplayBackOfficeHeader($params)
     {
-        //$this->context->controller->addCSS($this->_path.'css/css.css', 'all');
-        $backOfficeJS = $this->_path . 'views/js/backOfficeHeader.js';
-        $this->context->controller->addJS($backOfficeJS);
+        if (empty($params)) {
+            //nothing
+        }
+        
+        $this->context->controller->addCSS(
+            'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'
+        );
     }
     
     public function hookDisplayAdminOrder($params)
     {
-        $link = $this->context->link;
+        if (empty($params)) {
+            //dummy
+        }
+        
+        $link = new LinkCore();
+        $ajax_path = str_replace('/module/', '/modules/', $link->getModuleLink($this->name, 'ajax.php'));
         $file = '/views/templates/hook/googlemap.tpl';
         $id_order = (int)Tools::getValue('id_order');
-        $order = new OrderCore($id_order);
-        $address_delivery = new AddressCore($order->id_address_delivery);
-        $address_invoice = new AddressCore($order->id_address_invoice);
-        $state_delivery = new StateCore($address_delivery->id_state);
-        $state_invoice = new StateCore($address_invoice->id_state);
-        $this->context->smarty->assign('address_delivery', $address_delivery);
-        $this->context->smarty->assign('address_invoice', $address_invoice);
-        $this->context->smarty->assign('state_delivery', $state_delivery);
-        $this->context->smarty->assign('state_invoice', $state_invoice);
-        $this->context->smarty->assign('api_key', Configuration::get('MPGOOGLEADDRESS_KEY'));
-        $this->context->smarty->assign('showmap', Configuration::get('MPGOOGLEADDRESS_SHOW'));
-        $this->context->smarty->assign('printlabel', Configuration::get('MPGOOGLEADDRESS_PRINT'));
-        $this->context->smarty->assign('http', $this->getHTTP());
-        $this->context->smarty->assign('ajax_url', $link->getModuleLink('mpgoogleaddress', 'OrderPrintLabel'));
-        $this->context->smarty->assign('token', Tools::getAdminTokenLite('AdminOrders'));
-        $this->smarty->assign('address_id_order', Context::getContext()->controller->tpl_view_vars['order']->id);
-        return $this->display(__FILE__, $file);
+        $order = new Order($id_order);
+        $address_delivery = $this->getAddress($order->id_address_delivery);
+        $address_invoice = $this->getAddress($order->id_address_invoice);
+        $addresses = $this->getAddresses($order->id_customer);
+        $tpl_vars = array(
+            'id_order' => Tools::getValue('id_order'),
+            'address_delivery' => $address_delivery,
+            'address_invoice' => $address_invoice,
+            'addresses' => $addresses,
+            'api_key' => Configuration::get('MPGOOGLEADDRESS_KEY'),
+            'showmap' => Configuration::get('MPGOOGLEADDRESS_SHOW'),
+            'printlabel', Configuration::get('MPGOOGLEADDRESS_PRINT'),
+            'http' => $this->getHTTP(),
+            'ajax_url' => $ajax_path,
+            'token' => Tools::encrypt($this->name),
+            'tab_address' => $this->getAdminTemplatePath().'tab_address.tpl',
+            'tab_invoice' => $this->getAdminTemplatePath().'tab_invoice.tpl',
+            'row_address' => $this->getAdminTemplatePath().'row_address.tpl',
+            'jquery_map' => $this->getUrl().'views/js/jquery.googlemap.js',
+            'script' => $this->getAdminTemplatePath().'script.tpl',
+            'address_id_order' => Context::getContext()->controller->tpl_view_vars['order']->id,
+        );
+        $this->context->smarty->assign($tpl_vars);
+        //PrestaShopLoggerCore::addLog(print_r($tpl_vars,1));
+        $addresses_tpl = $this->getAdminTemplatePath().'addresses.tpl';
+        //$this->smarty->clearCache($addresses_tpl);
+        return $this->context->smarty->fetch($addresses_tpl);
     }
-     
+    
+    public function getAddresses($id_customer)
+    {
+        $db = Db::getInstance();
+        $sql = "select id_address from "._DB_PREFIX_."address "
+            ."where id_customer=".(int)$id_customer
+            ." and active=1";
+        $result = $db->executeS($sql);
+        $output = array();
+        foreach ($result as $addr) {
+            $output[] = $this->getAddress($addr['id_address']);
+        }
+        return $output;
+    }
+
+    public function getAddress($id_address)
+    {
+        $address = new Address($id_address);
+        $state = new StateCore($address->id_state);
+        $address->state = $state;
+        return $address;
+    }
+
+    public function ajaxDisplayChangeAddress()
+    {
+        $id_address = (int)Tools::getValue('id_address');
+        $id_order = (int)Tools::getValue('id_order');
+        $type = Tools::getValue('type');
+
+        $order = new Order($id_order);
+        if ($type=="delivery") {
+            $order->id_address_delivery = $id_address;
+        } else {
+            $order->id_address_invoice = $id_address;
+        }
+        $result = $order->save;
+        print Tools::jsonEncode(
+            array(
+                'result' => $result,
+                'method' => 'ajaxDisplayChangeAddress'
+            )
+        );
+        exit();
+    }
+
+    public function ajaxProcessChangeAddress()
+    {
+        $id_address = (int)Tools::getValue('id_address');
+        $id_order = (int)Tools::getValue('id_order');
+        $type = Tools::getValue('type');
+
+        $order = new Order($id_order);
+        if ($type=="delivery") {
+            $order->id_address_delivery = $id_address;
+        } else {
+            $order->id_address_invoice = $id_address;
+        }
+        $result = $order->save;
+        print Tools::jsonEncode(
+            array(
+                'result' => $result,
+                'method' => 'ajaxProcessChangeAddress'
+            )
+        );
+        exit();
+    }
+
+    public function ajaxProcessPrintAddress()
+    {
+        $id_address = (int)Tools::getValue('id_address');
+        $id_order = (int)Tools::getValue('id_order');
+        ob_start();
+        ob_end_clean();
+        header("Content-type:application/pdf");
+        print $this->pdf($id_order, $id_address);
+        exit();
+    }
+
+    public function ajaxProcessCreateLabel()
+    {
+        $id_order = (int)Tools::getValue('id_order', 0);
+        $address_type = Tools::getValue('address_type', 'shipping');
+        $file =  $this->pdf($id_order, $address_type);
+        print $this->getUrl().'pdf/'.basename($file);
+        exit();
+        /**
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename='.basename('label.pdf'));
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        header('Content-Length: ' . strlen($file));
+        ob_clean();
+        flush();
+        //print $file;
+        readfile($file);
+         * 
+         */
+    }
+    
+    private function pdf($id_order, $id_address)
+    {
+        $_PS_BASE_URL_ = Tools::getCurrentUrlProtocolPrefix().Tools::getShopDomain().__PS_BASE_URI__;
+        $PageWidth  = Configuration::get('MP_PRINTLABELS_WIDTH'); //millimeters
+        $PageHeight = Configuration::get('MP_PRINTLABELS_HEIGHT'); //millimeters
+        $ShowLogo   = Configuration::get('MP_PRINTLABELS_LOGO');
+        $LogoExt    = Configuration::get('MP_PRINTLABELS_EXT');
+        $Logo       = Configuration::get('MP_PRINTLABELS_FILE');
+        if ($Logo) {
+            $imageSize  = getimagesize($Logo);
+        } else {
+            $imageSize  = 0;
+        }
+        $ShowPhone  = Configuration::get('MP_PRINTLABELS_PHONE');
+        $ShowMobile = Configuration::get('MP_PRINTLABELS_MOBILE');
+        $ShowOrder  = Configuration::get('MP_PRINTLABELS_ORDER');
+
+        /**
+        $orderObj   = new Order($id_order);
+        if ($addr_type=='invoice') {
+            $addressObj = new Address($orderObj->id_address_invoice);
+        } else {
+            $addressObj = new Address($orderObj->id_address_delivery);
+        }
+        **/
+
+        $orderObj = new Order($id_order);
+        $addressObj = new Address($id_address);
+
+        $stateObj   = new StateCore($addressObj->id_state);
+        if ($PageWidth<10) {
+            $PageWidth=100;
+        }
+        if ($PageHeight<10) {
+            $PageHeight=100;
+        }
+        $pageSize   = array($PageWidth,$PageHeight);
+        $pdf        = new TCPDF("P", "mm", $pageSize, true, "UTF-8", false, false);
+
+        $pdf->SetAutoPageBreak(false);
+        $pdf->setCellHeightRatio(0.5);
+        $pdf->AddPage();
+        $pdf->setCellMargins(0, 5, 0, 5);
+        $pdf->setCellPaddings(5, 5, 5, 5);
+
+        //LABEL
+        if (!empty($ShowLogo) || $ShowLogo==true && $imageSize) {
+            $prop = $imageSize[0]/$imageSize[1]; // [0]=Width, [1]=Height
+            $w = $PageWidth*90/100;
+            $h = $w/$prop;
+            $pdf->image($Logo, $PageWidth*5/100, 5, $w);
+            $pdf->SetY($pdf->GetY() + $h - 5);
+        }
+
+        if (1==2) {
+            print "<pre>";
+            print "\nwidth=".$PageWidth;
+            print "\nheight=".$PageHeight;
+            print "\nlogo=".$ShowLogo;
+            print "\nlogoext=".$LogoExt;
+            print "\nfile=".$Logo;
+            print "\nphone=".$ShowPhone;
+            print "\nmobile=".$ShowMobile;
+            print "\norder=".$ShowOrder;
+            print "\nimg_width=".$imageSize[0];
+            print "\nimg_height=".$imageSize[1];
+            print "\nprop=".$prop;
+            print "\nprint_img_width=".$w;
+            print "\nprint_img_height=".$h;
+            print "\nPS_BASE_URL: ". $_PS_BASE_URL_;
+            print "<pre>";
+        }
+        //DEST
+        $posY = $pdf->GetY();
+        $pdf->SetFont("helvetica", "B", "10");
+        $pdf->Cell(0, 0, "DEST", 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->ln(6);
+        $pdf->SetFont("helvetica", "B", "18");
+        $name = $addressObj->firstname . " " . $addressObj->lastname;
+        if (!empty($addressObj->company)) {
+            //COMPANY
+            $pdf->SetFont("helvetica", "B", "14");
+            $pdf->Cell(0, 5, Tools::strtoupper($addressObj->company), 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->ln(6);
+            //NAME
+            $pdf->SetFont("helvetica", "B", "10");
+            $pdf->Cell(0, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->ln(6);
+        } else {
+            //NAME
+            $pdf->SetFont("helvetica", "B", "18");
+            $pdf->Cell(0, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->ln(6);
+        }
+
+        //ADDRESS
+        $pdf->SetFont("helvetica", "", "14");
+        $pdf->Cell(0, 5, $addressObj->address1, 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->ln(6);
+        if (!empty($addressObj->address2)) {
+            $pdf->Cell(0, 5, $addressObj->address2, 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->ln(6);
+        }
+        //POSTCODE
+        $pdf->Cell(0, 5, $addressObj->postcode." ".$addressObj->city, 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->ln(6);
+        //STATE
+        $pdf->Cell(0, 5, $stateObj->name . " " . $stateObj->iso_code, 0, 0, "L", false, "", 1, false, "C", "C");
+        $pdf->ln(6);
+
+        if ($ShowPhone || $ShowMobile || $ShowOrder) {
+            $pdf->Line(10, $pdf->GetY()+3.5, $PageWidth-10, $pdf->GetY()+3.5);
+            $pdf->ln(4);
+        }
+
+       if ($ShowPhone && $addressObj->phone) {
+            $pdf->SetFontSize(12);
+            $pdf->Cell(0, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
+            $pdf->ln(4);
+        } elseif ($ShowMobile && $addressObj->phone_mobile) {
+            $pdf->SetFontSize(12);
+            $pdf->Cell(0, 5, "CELL: ".$addressObj->phone_mobile, 0, 0, "L", false, "", 0, false, "C", "C");
+            $pdf->ln(4);
+        }
+
+        if ($ShowOrder) {
+            //$pdf->sety($PageHeight-10);
+            $pdf->SetY($posY);
+            $pdf->SetFont("helvetica", "B", "10");
+            $pdf->Cell(90, 5, "ORDINE: ".$orderObj->reference, 0, 0, "R", false, "", 0, false, "C", "C");
+        }
+
+        $pdf->lastPage();
+        //return $pdf->Output();
+        //$file = dirname(__FILE__).'/pdf/label.pdf';
+        return $pdf->Output($file, "I");
+        //return $file;
+        //print $pdf->Output();
+        //chmod($file, 0775);
+
+        //$response = array('url' => "../modules/mpgoogleaddress/pdf/label.pdf");
+
+        //print Tools::jsonEncode($response);
+    }
+    
+    public function ajaxProcessRemoveDataFromAddress()
+    {
+        $id_order = (int)Tools::getValue('id_order', 0);
+        $fieldname = Tools::getValue('fieldname', '');
+        $addressType = Tools::getValue('address', '');
+        if (!$id_order) {
+            $this->printAjaxError($this->l('Invalid Order Id'));
+            exit();
+        }
+        if (!$fieldname) {
+            $this->printAjaxError($this->l('Invalid Field name'));
+            exit();
+        }
+        if (!$addressType || !($addressType=='invoice' || $addressType=='delivery')) {
+            $this->printAjaxError($this->l('Invalid Address type'));
+            exit();
+        }
+        $order = new OrderCore($id_order);
+        $address = array();
+        if ($addressType == 'delivery') {
+            $address = new Address($order->id_address_delivery);
+        } else {
+            $address = new Address($order->id_address_invoice);
+        }
+        $db = Db::getInstance();
+        $result = $db->update(
+            'address',
+            array(
+                $fieldname => ''
+            ),
+            'id_address='.(int)$address->id
+        );
+        if ($result) {
+            if ($fieldname == 'dni') {
+                $this->printAjaxConfirmation($this->l('Dni deleted'));
+            } else {
+                $this->printAjaxConfirmation($this->l('Vat number deleted'));
+            }
+        } else {
+            $this->printAjaxError($this->l('Error deleting field.'));
+        }
+        exit();
+    }
+    
+    public function printAjaxConfirmation($message)
+    {
+        print Tools::jsonEncode(
+            array(
+                'error' => false,
+                'message' => $message,
+            )
+        );
+    }
+    
+    public function printAjaxError($error)
+    {
+        print Tools::jsonEncode(
+            array(
+                'error' => true,
+                'message' => $error,
+            )
+        );
+    }
+    
     public function getContent()
     {
-        $output = null;
-
+        $output = '';
+        $this->generateThumb();
+        
         if (Tools::isSubmit('submit_form')) {
             /**
              * Save Logo
              */
-            if (!empty($_FILES) && $_FILES['MP_PRINTLABELS_FILE']['error']==0) {
-                $fileupd = $_FILES['MP_PRINTLABELS_FILE'];
-                //$file_name = $fileupd["name"];
-                //$file_type = $fileupd["type"];
-                $file_tmp_name = $fileupd["tmp_name"];
-                //$file_error = $fileupd["error"];
-                //$file_size = $fileupd["size"];
-                 
-                $image = MP_LABEL_LOGO; //dirname(__FILE__) . "/views/img/image_logo.dat";
-                //$image_type = "";
-                //if (strpos($file_type,"png")){$image = dirname(__FILE__) . "/image_logo.png";$image_type="png";}
-                //if (strpos($file_type,"jpeg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
-                //if (strpos($file_type,"jpg")){$image = dirname(__FILE__) . "/image_logo.jpg";$image_type="jpg";}
-                //if (strpos($file_type,"gif")){$image = dirname(__FILE__) . "/image_logo.gif";$image_type="gif";}
-                
-                if (!empty($image)) {
-                    if (move_uploaded_file($file_tmp_name, $image)) {
-                        //set permissions
-                        chmod($image, 0775);
-                        Configuration::updateValue('MP_PRINTLABELS_FILE', basename($image));
-                        $this->generateThumb();
-                    } else {
-                        $this->image_url = "";
-                        $this->img_size  = 0;
-                    }
+            $file = Tools::fileAttachment('MP_PRINTLABELS_FILE');
+            if (!empty($file)) {
+                $fileExt = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $mimeType = array('image/png', 'image/x-png', 'image/jpg', 'image/gif', 'image/jpeg');
+
+                if (!in_array($file['mime'], $mimeType)) {
+                    $this->context->smarty->assign(
+                        'warning',
+                        $this->displayWarning(
+                            $this->l('Bad format image file')
+                            . ': '
+                            . $this->l('Only (jpg/gif/png) image file accepted')
+                        )
+                    );
                 } else {
+                    $dest = _PS_MODULE_DIR_ . 'mpgoogleaddress/views/img/printlabel_logo' . '.' . $fileExt;
+                    $remove = glob(_PS_MODULE_DIR_ . 'mpgoogleaddress/views/img/printlabel_logo.*');
+                    foreach ($remove as $logo) {
+                        unlink($logo);
+                    }
+                    move_uploaded_file($file['tmp_name'], $dest);
+                    ConfigurationCore::updateValue('MP_PRINTLABELS_FILE', $dest);
                     $this->generateThumb();
                 }
-            } else {
-                $this->generateThumb();
             }
             /**
              * Get Google map values
              */
             $api_key = (string)(Tools::getValue('MPGOOGLEADDRESS_KEY'));
-            Configuration::updateValue('MPGOOGLEADDRESS_KEY', $api_key);
+            
+            if (empty($api_key)) {
+                $error = $this->displayError($this->l('Please insert a valid API Key for map visualization'));
+                return $error . $this->displayForm();
+            }
+            
             $show = (bool)(Tools::getValue('MPGOOGLEADDRESS_SHOW'));
-            Configuration::updateValue('MPGOOGLEADDRESS_SHOW', $show);
             $print = (bool)(Tools::getValue('MPGOOGLEADDRESS_PRINT'));
-            Configuration::updateValue('MPGOOGLEADDRESS_PRINT', $print);
             $output .= $this->displayConfirmation($this->l('Settings updated'));
             /**
              * Get Print Labels values
              */
-            $labelWidth     = (string)(Tools::getValue('MP_PRINTLABELS_WIDTH'));
-            $labelHeight    = (string)(Tools::getValue('MP_PRINTLABELS_HEIGHT'));
+            $labelWidth     = (int)(Tools::getValue('MP_PRINTLABELS_WIDTH'));
+            $labelHeight    = (int)(Tools::getValue('MP_PRINTLABELS_HEIGHT'));
+            
+            if ($labelWidth == 0) {
+                $error = $this->displayError($this->l('Please insert a valid label width'));
+                return $error . $this->displayForm();
+            }
+            
+            if ($labelHeight == 0) {
+                $error = $this->displayError($this->l('Please insert a valid label height'));
+                return $error . $this->displayForm();
+            }
+            
+            
             $labelLogo      = (string)(Tools::getValue('MP_PRINTLABELS_LOGO'));
             $labelExt       = (string)(Tools::getValue('MP_PRINTLABELS_EXT'));
             $labelPhone     = (string)(Tools::getValue('MP_PRINTLABELS_PHONE'));
             $labelMobile    = (string)(Tools::getValue('MP_PRINTLABELS_MOBILE'));
             $labelOrder     = (string)(Tools::getValue('MP_PRINTLABELS_ORDER'));
 
+            Configuration::updateValue('MPGOOGLEADDRESS_KEY', $api_key);
+            Configuration::updateValue('MPGOOGLEADDRESS_SHOW', $show);
+            Configuration::updateValue('MPGOOGLEADDRESS_PRINT', $print);
             Configuration::updateValue('MP_PRINTLABELS_WIDTH', $labelWidth);
             Configuration::updateValue('MP_PRINTLABELS_HEIGHT', $labelHeight);
             Configuration::updateValue('MP_PRINTLABELS_LOGO', $labelLogo);
@@ -180,14 +551,26 @@ class MpGoogleAddress extends Module
             Configuration::updateValue('MP_PRINTLABELS_MOBILE', $labelMobile);
             Configuration::updateValue('MP_PRINTLABELS_ORDER', $labelOrder);
         }
+        $js = _PS_MODULE_DIR_ . 'mpgoogleaddress/views/js/imagePreview.js';
+        if (file_exists($js)) {
+            $this->context->controller->addJS($js);
+        } else {
+            $output .= $this->displayWarning('Script not found: ' . $js);
+        }
+        
         return $output.$this->displayForm();
     }
     
     public function generateThumb()
     {
-        $image = dirname(__FILE__) . "/" . Configuration::get('MP_PRINTLABELS_FILE');
-        $this->img_url  = ImageManager::thumbnail($image, 'printlabel_logo.jpg', 200, 'jpg', true, true);
-        $this->img_size = file_exists($image) ? number_format(filesize($image)/1024, 2) : 0;
+        $filename = Configuration::get('MP_PRINTLABELS_FILE');
+        if (!empty($filename) && file_exists($filename)) {
+            $this->img_url  = ImageManager::thumbnail($filename, 'printlabel_logo.jpg', 200, 'jpg', true, true);
+            $this->img_size = Tools::formatBytes(filesize($filename)/1024);
+        } else {
+            $this->img_url  = '';
+            $this->img_size = 0;
+        }
     }
     
     public function displayForm()
@@ -301,7 +684,6 @@ class MpGoogleAddress extends Module
                         'label'     => $this->l('Select a file:'),
                         'desc'      => $this->l('Logo Picture. Extension allowed: jpeg, png, jpg, gif.'),
                         'name'      => 'MP_PRINTLABELS_FILE',
-                        'required'  => true,
                         'lang'      => true,
                         'display_image' => true,
                         'image' => $this->img_url,

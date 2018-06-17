@@ -23,5 +23,20 @@
 */
 
 $(document).ready(function(){
-    $("#MP_PRINTLABELS_FILE").prop("accept","*,jpg,*.png,*.gif,*,jpeg");
+    $("#MP_PRINTLABELS_FILE").attr("accept","*,jpg,*.png,*.gif,*,jpeg");
+    $("#MP_PRINTLABELS_FILE").change(function(){
+        readURL(this);
+    });
 });
+
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#MP_PRINTLABELS_FILE-images-thumbnails>div>img').attr('src', e.target.result);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
