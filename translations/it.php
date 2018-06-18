@@ -51,3 +51,8 @@ $_MODULE['<{mpgoogleaddress}prestashop>addresses_fd7c9e768295f883fa976b7019f6afe
 $_MODULE['<{mpgoogleaddress}prestashop>addresses_121c7958ad5673812be004dd6bcb4dda'] = 'Stampa indirizzo';
 $_MODULE['<{mpgoogleaddress}prestashop>addresses_edccfd8b7f08b1addbe3b06bfac73898'] = 'Operazione eseguita';
 $_MODULE['<{mpgoogleaddress}prestashop>addresses_d57bc291dd91143ec683013037ff900e'] = 'Indirizzo cambiato.';
+$_MODULE['<{mpgoogleaddress}prestashop>label2_6575d9a58f0b41a108f2d6a565a0650d'] = 'ORDINE';
+$_MODULE['<{mpgoogleaddress}prestashop>label2_bcc254b55c4a1babdf1dcb82c207506b'] = 'Telefono';
+$_MODULE['<{mpgoogleaddress}prestashop>label2_87d17f4624a514e81dc7c8e016a7405c'] = 'Cellulare';
+$_MODULE['<{mpgoogleaddress}prestashop>label_a240fa27925a635b08dc28c9e4f9216d'] = 'Ordine';
+$_MODULE['<{mpgoogleaddress}prestashop>label_bcc254b55c4a1babdf1dcb82c207506b'] = 'Telefono';

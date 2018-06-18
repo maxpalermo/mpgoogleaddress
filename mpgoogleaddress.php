@@ -56,7 +56,9 @@ class MpGoogleAddress extends Module
         $this->context = ContextCore::getContext();
         if (Tools::isSubmit('ajax')) {
             $action = 'ajaxProcess'.Tools::ucfirst(Tools::getValue('action'));
-            $this->$action();
+            if (method_exists($this, $action)) {
+                $this->$action();
+            }
         }
     }
     
@@ -143,8 +145,10 @@ class MpGoogleAddress extends Module
             'api_key' => Configuration::get('MPGOOGLEADDRESS_KEY'),
             'showmap' => Configuration::get('MPGOOGLEADDRESS_SHOW'),
             'printlabel', Configuration::get('MPGOOGLEADDRESS_PRINT'),
+            'verify_vat', Configuration::get('MPGOOGLEADDRESS_VERIFY_VAT'),
             'http' => $this->getHTTP(),
             'ajax_url' => $ajax_path,
+            'ajax_print_label' => $this->getUrl().'print_label.php',
             'token' => Tools::encrypt($this->name),
             'tab_address' => $this->getAdminTemplatePath().'tab_address.tpl',
             'tab_invoice' => $this->getAdminTemplatePath().'tab_invoice.tpl',
@@ -550,6 +554,7 @@ class MpGoogleAddress extends Module
             Configuration::updateValue('MP_PRINTLABELS_PHONE', $labelPhone);
             Configuration::updateValue('MP_PRINTLABELS_MOBILE', $labelMobile);
             Configuration::updateValue('MP_PRINTLABELS_ORDER', $labelOrder);
+            Configuration::updateValue('MPGOOGLEADDRESS_VERIFY_VAT', 'https://telematici.agenziaentrate.gov.it/VerificaPIVA/Scegli.do?parameter=verificaPiva');
         }
         $js = _PS_MODULE_DIR_ . 'mpgoogleaddress/views/js/imagePreview.js';
         if (file_exists($js)) {

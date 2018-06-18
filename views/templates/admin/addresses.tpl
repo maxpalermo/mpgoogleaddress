@@ -136,18 +136,18 @@
 </div>
 <script type="text/javascript">
     var daddr = {
-        'address1': '{$address_delivery->address1}',
-        'postcode': '{$address_delivery->postcode}',
-        'city': '{$address_delivery->city}',
-        'state': '{$address_delivery->state->name}',
-        'country': '{$address_delivery->country}'
+        address1: "{$address_delivery->address1}",
+        postcode: "{$address_delivery->postcode}",
+        city: "{$address_delivery->city}",
+        state: "{$address_delivery->state->name}",
+        country: "{$address_delivery->country}"
     };
     var iaddr = {
-        'address1': '{$address_invoice->address1}',
-        'postcode': '{$address_invoice->postcode}',
-        'city': '{$address_invoice->city}',
-        'state': '{$address_invoice->state->name}',
-        'country': '{$address_invoice->country}'
+        address1: "{$address_invoice->address1}",
+        postcode: "{$address_invoice->postcode}",
+        city: "{$address_invoice->city}",
+        state: "{$address_invoice->state->name}",
+        country: "{$address_invoice->country}"
     };
 
     $(document).ready(function(){
@@ -196,19 +196,19 @@
         var data_type = $('#ps_addresses ul li.active').attr('data-type');
         var id_address = $('#ps_addresses ul li.active').attr('id_address');
         $.ajax({
+            url: '{$ajax_print_label}',
             type: 'post',
             data:
             {
                 ajax: true,
-                action: 'printAddress',
+                action: 'printLabel',
+                token: '{$token}',
                 id_address: id_address,
                 id_order: '{$id_order}'
             },
             success: function(response)
             {
-                var pdf = String(response).split('-----DELIMITER-----');
-                var opened = window.open("data:application/pdf,");
-                opened.document.write("data:application/pdf,"+pdf);
+                window.open("{$ajax_print_label}", "Label.pdf");
             },
             error: function(response){
                 console.log(response);
