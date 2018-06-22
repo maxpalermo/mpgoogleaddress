@@ -54,12 +54,6 @@ class MpGoogleAddress extends Module
             $this->l('Enhance customer address visualization and print shipping label');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
         $this->context = ContextCore::getContext();
-        if (Tools::isSubmit('ajax')) {
-            $action = 'ajaxProcess'.Tools::ucfirst(Tools::getValue('action'));
-            if (method_exists($this, $action)) {
-                $this->$action();
-            }
-        }
     }
     
     /**
@@ -131,7 +125,6 @@ class MpGoogleAddress extends Module
         
         $link = new LinkCore();
         $ajax_path = str_replace('/module/', '/modules/', $link->getModuleLink($this->name, 'ajax.php'));
-        $file = '/views/templates/hook/googlemap.tpl';
         $id_order = (int)Tools::getValue('id_order');
         $order = new Order($id_order);
         $address_delivery = $this->getAddress($order->id_address_delivery);
@@ -148,7 +141,9 @@ class MpGoogleAddress extends Module
             'verify_vat', Configuration::get('MPGOOGLEADDRESS_VERIFY_VAT'),
             'http' => $this->getHTTP(),
             'ajax_url' => $ajax_path,
-            'ajax_print_label' => $this->getUrl().'print_label.php',
+            'ajax_print_label' => $this->getUrl().'ajax_print_label.php',
+            'ajax_change_address' => $this->getUrl().'ajax_change_address.php',
+            'ajax_show_address' => $this->getUrl().'ajax_show_address.php',
             'token' => Tools::encrypt($this->name),
             'tab_address' => $this->getAdminTemplatePath().'tab_address.tpl',
             'tab_invoice' => $this->getAdminTemplatePath().'tab_invoice.tpl',
@@ -186,51 +181,7 @@ class MpGoogleAddress extends Module
         return $address;
     }
 
-    public function ajaxDisplayChangeAddress()
-    {
-        $id_address = (int)Tools::getValue('id_address');
-        $id_order = (int)Tools::getValue('id_order');
-        $type = Tools::getValue('type');
-
-        $order = new Order($id_order);
-        if ($type=="delivery") {
-            $order->id_address_delivery = $id_address;
-        } else {
-            $order->id_address_invoice = $id_address;
-        }
-        $result = $order->save;
-        print Tools::jsonEncode(
-            array(
-                'result' => $result,
-                'method' => 'ajaxDisplayChangeAddress'
-            )
-        );
-        exit();
-    }
-
-    public function ajaxProcessChangeAddress()
-    {
-        $id_address = (int)Tools::getValue('id_address');
-        $id_order = (int)Tools::getValue('id_order');
-        $type = Tools::getValue('type');
-
-        $order = new Order($id_order);
-        if ($type=="delivery") {
-            $order->id_address_delivery = $id_address;
-        } else {
-            $order->id_address_invoice = $id_address;
-        }
-        $result = $order->save;
-        print Tools::jsonEncode(
-            array(
-                'result' => $result,
-                'method' => 'ajaxProcessChangeAddress'
-            )
-        );
-        exit();
-    }
-
-    public function ajaxProcessPrintAddress()
+    public function displayAjaxPrintAddress()
     {
         $id_address = (int)Tools::getValue('id_address');
         $id_order = (int)Tools::getValue('id_order');
@@ -241,173 +192,13 @@ class MpGoogleAddress extends Module
         exit();
     }
 
-    public function ajaxProcessCreateLabel()
+    public function displayAjaxCreateLabel()
     {
         $id_order = (int)Tools::getValue('id_order', 0);
         $address_type = Tools::getValue('address_type', 'shipping');
         $file =  $this->pdf($id_order, $address_type);
         print $this->getUrl().'pdf/'.basename($file);
         exit();
-        /**
-        header('Content-Description: File Transfer');
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: attachment; filename='.basename('label.pdf'));
-        header('Content-Transfer-Encoding: binary');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-        header('Pragma: public');
-        header('Content-Length: ' . strlen($file));
-        ob_clean();
-        flush();
-        //print $file;
-        readfile($file);
-         * 
-         */
-    }
-    
-    private function pdf($id_order, $id_address)
-    {
-        $_PS_BASE_URL_ = Tools::getCurrentUrlProtocolPrefix().Tools::getShopDomain().__PS_BASE_URI__;
-        $PageWidth  = Configuration::get('MP_PRINTLABELS_WIDTH'); //millimeters
-        $PageHeight = Configuration::get('MP_PRINTLABELS_HEIGHT'); //millimeters
-        $ShowLogo   = Configuration::get('MP_PRINTLABELS_LOGO');
-        $LogoExt    = Configuration::get('MP_PRINTLABELS_EXT');
-        $Logo       = Configuration::get('MP_PRINTLABELS_FILE');
-        if ($Logo) {
-            $imageSize  = getimagesize($Logo);
-        } else {
-            $imageSize  = 0;
-        }
-        $ShowPhone  = Configuration::get('MP_PRINTLABELS_PHONE');
-        $ShowMobile = Configuration::get('MP_PRINTLABELS_MOBILE');
-        $ShowOrder  = Configuration::get('MP_PRINTLABELS_ORDER');
-
-        /**
-        $orderObj   = new Order($id_order);
-        if ($addr_type=='invoice') {
-            $addressObj = new Address($orderObj->id_address_invoice);
-        } else {
-            $addressObj = new Address($orderObj->id_address_delivery);
-        }
-        **/
-
-        $orderObj = new Order($id_order);
-        $addressObj = new Address($id_address);
-
-        $stateObj   = new StateCore($addressObj->id_state);
-        if ($PageWidth<10) {
-            $PageWidth=100;
-        }
-        if ($PageHeight<10) {
-            $PageHeight=100;
-        }
-        $pageSize   = array($PageWidth,$PageHeight);
-        $pdf        = new TCPDF("P", "mm", $pageSize, true, "UTF-8", false, false);
-
-        $pdf->SetAutoPageBreak(false);
-        $pdf->setCellHeightRatio(0.5);
-        $pdf->AddPage();
-        $pdf->setCellMargins(0, 5, 0, 5);
-        $pdf->setCellPaddings(5, 5, 5, 5);
-
-        //LABEL
-        if (!empty($ShowLogo) || $ShowLogo==true && $imageSize) {
-            $prop = $imageSize[0]/$imageSize[1]; // [0]=Width, [1]=Height
-            $w = $PageWidth*90/100;
-            $h = $w/$prop;
-            $pdf->image($Logo, $PageWidth*5/100, 5, $w);
-            $pdf->SetY($pdf->GetY() + $h - 5);
-        }
-
-        if (1==2) {
-            print "<pre>";
-            print "\nwidth=".$PageWidth;
-            print "\nheight=".$PageHeight;
-            print "\nlogo=".$ShowLogo;
-            print "\nlogoext=".$LogoExt;
-            print "\nfile=".$Logo;
-            print "\nphone=".$ShowPhone;
-            print "\nmobile=".$ShowMobile;
-            print "\norder=".$ShowOrder;
-            print "\nimg_width=".$imageSize[0];
-            print "\nimg_height=".$imageSize[1];
-            print "\nprop=".$prop;
-            print "\nprint_img_width=".$w;
-            print "\nprint_img_height=".$h;
-            print "\nPS_BASE_URL: ". $_PS_BASE_URL_;
-            print "<pre>";
-        }
-        //DEST
-        $posY = $pdf->GetY();
-        $pdf->SetFont("helvetica", "B", "10");
-        $pdf->Cell(0, 0, "DEST", 0, 0, "L", false, "", 1, false, "C", "C");
-        $pdf->ln(6);
-        $pdf->SetFont("helvetica", "B", "18");
-        $name = $addressObj->firstname . " " . $addressObj->lastname;
-        if (!empty($addressObj->company)) {
-            //COMPANY
-            $pdf->SetFont("helvetica", "B", "14");
-            $pdf->Cell(0, 5, Tools::strtoupper($addressObj->company), 0, 0, "L", false, "", 1, false, "C", "C");
-            $pdf->ln(6);
-            //NAME
-            $pdf->SetFont("helvetica", "B", "10");
-            $pdf->Cell(0, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
-            $pdf->ln(6);
-        } else {
-            //NAME
-            $pdf->SetFont("helvetica", "B", "18");
-            $pdf->Cell(0, 5, Tools::strtoupper($name), 0, 0, "L", false, "", 1, false, "C", "C");
-            $pdf->ln(6);
-        }
-
-        //ADDRESS
-        $pdf->SetFont("helvetica", "", "14");
-        $pdf->Cell(0, 5, $addressObj->address1, 0, 0, "L", false, "", 1, false, "C", "C");
-        $pdf->ln(6);
-        if (!empty($addressObj->address2)) {
-            $pdf->Cell(0, 5, $addressObj->address2, 0, 0, "L", false, "", 1, false, "C", "C");
-            $pdf->ln(6);
-        }
-        //POSTCODE
-        $pdf->Cell(0, 5, $addressObj->postcode." ".$addressObj->city, 0, 0, "L", false, "", 1, false, "C", "C");
-        $pdf->ln(6);
-        //STATE
-        $pdf->Cell(0, 5, $stateObj->name . " " . $stateObj->iso_code, 0, 0, "L", false, "", 1, false, "C", "C");
-        $pdf->ln(6);
-
-        if ($ShowPhone || $ShowMobile || $ShowOrder) {
-            $pdf->Line(10, $pdf->GetY()+3.5, $PageWidth-10, $pdf->GetY()+3.5);
-            $pdf->ln(4);
-        }
-
-       if ($ShowPhone && $addressObj->phone) {
-            $pdf->SetFontSize(12);
-            $pdf->Cell(0, 5, "TEL: " . $addressObj->phone, 0, 0, "L", false, "", 1, false, "C", "C");
-            $pdf->ln(4);
-        } elseif ($ShowMobile && $addressObj->phone_mobile) {
-            $pdf->SetFontSize(12);
-            $pdf->Cell(0, 5, "CELL: ".$addressObj->phone_mobile, 0, 0, "L", false, "", 0, false, "C", "C");
-            $pdf->ln(4);
-        }
-
-        if ($ShowOrder) {
-            //$pdf->sety($PageHeight-10);
-            $pdf->SetY($posY);
-            $pdf->SetFont("helvetica", "B", "10");
-            $pdf->Cell(90, 5, "ORDINE: ".$orderObj->reference, 0, 0, "R", false, "", 0, false, "C", "C");
-        }
-
-        $pdf->lastPage();
-        //return $pdf->Output();
-        //$file = dirname(__FILE__).'/pdf/label.pdf';
-        return $pdf->Output($file, "I");
-        //return $file;
-        //print $pdf->Output();
-        //chmod($file, 0775);
-
-        //$response = array('url' => "../modules/mpgoogleaddress/pdf/label.pdf");
-
-        //print Tools::jsonEncode($response);
     }
     
     public function ajaxProcessRemoveDataFromAddress()
@@ -554,7 +345,10 @@ class MpGoogleAddress extends Module
             Configuration::updateValue('MP_PRINTLABELS_PHONE', $labelPhone);
             Configuration::updateValue('MP_PRINTLABELS_MOBILE', $labelMobile);
             Configuration::updateValue('MP_PRINTLABELS_ORDER', $labelOrder);
-            Configuration::updateValue('MPGOOGLEADDRESS_VERIFY_VAT', 'https://telematici.agenziaentrate.gov.it/VerificaPIVA/Scegli.do?parameter=verificaPiva');
+            Configuration::updateValue(
+                'MPGOOGLEADDRESS_VERIFY_VAT',
+                'https://telematici.agenziaentrate.gov.it/VerificaPIVA/Scegli.do?parameter=verificaPiva'
+            );
         }
         $js = _PS_MODULE_DIR_ . 'mpgoogleaddress/views/js/imagePreview.js';
         if (file_exists($js)) {

@@ -60,10 +60,10 @@
         <div class="col-md-9">
             <select id="change_delivery_address" class="input" style="width: 100%;">
                 {foreach $addresses as $addr}
-                    <option value="{$addr->id}">
-                        {$addr->address1}, {$addr->postcode} {$addr->city} {$addr->state->iso_code}
+                    <option value="{$addr->id|escape:'htmlall':'UTF-8'}">
+                        {$addr->address1|escape:'htmlall':'UTF-8'}, {$addr->postcode|escape:'htmlall':'UTF-8'} {$addr->city|escape:'htmlall':'UTF-8'} {$addr->state->iso_code|escape:'htmlall':'UTF-8'}
                         {if isset($addr->vat_number) && !empty($addr->vat_number)}
-                            &nbsp;({l s='Vat numb' mod='mpgoogleaddress'} {$addr->vat_number})
+                            &nbsp;({l s='Vat numb' mod='mpgoogleaddress'} {$addr->vat_number|escape:'htmlall':'UTF-8'})
                         {/if}
                     </option>
                 {/foreach}
@@ -80,13 +80,13 @@
     <br>
     <!--Nav content-->
     <ul class='nav nav-tabs' id="tabAddresses">
-        <li class="active" data-type="delivery" id_address='{$address_delivery->id}'>
-            <a href="#addressShipping" onclick='javascript:activatePane();'>
+        <li class="active" data-type="delivery" id_address='{$address_delivery->id|escape:'htmlall':'UTF-8'}'>
+            <a href="#addressShipping" onclick='javascript:activatePane("delivery");'>
                 <i class="icon icon-truck"></i>&nbsp;{l s='Delivery address' mod='mpgoogleaddress'}
             </a>
         </li>
-        <li data-type="invoice" id_address='{$address_invoice->id}'>
-            <a href="#addressInvoice" onclick='javascript:activatePane();'>
+        <li data-type="invoice" id_address='{$address_invoice->id|escape:'htmlall':'UTF-8'}'>
+            <a href="#addressInvoice" onclick='javascript:activatePane("invoice");'>
                 <i class="icon icon-list"></i>&nbsp;{l s='Invoice address' mod='mpgoogleaddress'}
             </a>
         </li>
@@ -109,17 +109,17 @@
     <div class="row text-center">
         <div class="col-md-4">
             <button type="button" class="btn btn-default fixed-width-l">
-                <i class="icon icon-times color-red"></i>&nbsp;{l s="Remove DNI" mod='mpgoogleaddress'}
+                <i class="icon icon-times color-red"></i>&nbsp;{l s='Remove DNI' mod='mpgoogleaddress'}
             </button>
         </div>
         <div class="col-md-4">
             <button type="button" class="btn btn-default fixed-width-l">
-                <i class="icon icon-times color-red"></i>&nbsp;{l s="Remove VAT" mod='mpgoogleaddress'}
+                <i class="icon icon-times color-red"></i>&nbsp;{l s='Remove VAT' mod='mpgoogleaddress'}
             </button>
         </div>
         <div class="col-md-4">
             <button type="button" class="btn btn-default fixed-width-l" onclick="javascript:printAddress();">
-                <i class="icon icon-print color-blue"></i>&nbsp;{l s="Print Address" mod='mpgoogleaddress'}
+                <i class="icon icon-print color-blue"></i>&nbsp;{l s='Print Address' mod='mpgoogleaddress'}
             </button>
         </div>
     </div>
@@ -128,63 +128,54 @@
         <div id="map-delivery-canvas" style="display: none;"></div>
         <div id="map-invoice-canvas" style="display: none;"></div>
         <div class="col-md-12 text-center">
-            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$api_key}"></script>
+            <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key={$api_key|escape:'htmlall':'UTF-8'}"></script>
             <div id="map-mpgoogle" style="width: 100%; height: 300px; margin: 10px auto;"></div>
         </div>
         <br>
     </div>
 </div>
 <script type="text/javascript">
-    var daddr = {
-        address1: "{$address_delivery->address1}",
-        postcode: "{$address_delivery->postcode}",
-        city: "{$address_delivery->city}",
-        state: "{$address_delivery->state->name}",
-        country: "{$address_delivery->country}"
-    };
-    var iaddr = {
-        address1: "{$address_invoice->address1}",
-        postcode: "{$address_invoice->postcode}",
-        city: "{$address_invoice->city}",
-        state: "{$address_invoice->state->name}",
-        country: "{$address_invoice->country}"
-    };
-
     $(document).ready(function(){
         var row = $('#tabAddresses').closest('.row');
         var pane = $('#ps_addresses');
         var panel = $(row).closest('.panel');
         $(row).remove();
         $(panel).append($(pane));
+        $('#tabAddresses').find('li:nth-child(1)').click();
         refreshGeocode('delivery');
     });
     function changeAddress()
     {
         var data_type = $('#ps_addresses ul li.active').attr('data-type');
         var id_address = $('#change_delivery_address').val();
-        console.log({
-            'type': data_type,
-            'id_address': id_address,
-            'id_order': '{$id_order}'
-        });
+        
         $.ajax({
             type: 'post',
             dataType: 'json',
+            url: '{$ajax_change_address|escape:'htmlall':'UTF-8'}',
             data:
             {
                 ajax: true,
                 action: 'changeAddress',
+                token: '{$token|escape:'htmlall':'UTF-8'}',
                 id_address: id_address,
-                id_order: '{$id_order}',
+                id_order: '{$id_order|escape:'htmlall':'UTF-8'}',
                 type: data_type
             },
             success: function(response)
             {
-                $.growl.notice({
-                    title: '{l s='Operation done.' mod='mpgoogleaddress'}',
-                    message: '{l s='Address changed' mod='mpgoogleaddress'}',
-                });
-                setTimeout(location.reload(),3000);
+                if (response.result) {
+                    $.growl.notice({
+                        title: '{l s='Operation done.' mod='mpgoogleaddress'}',
+                        message: '{l s='Address changed' mod='mpgoogleaddress'}',
+                    });
+                    setTimeout(location.reload(),3000);
+                } else {
+                    $.growl.error({
+                        title: 'Error',
+                        message: '{l s='Unable to change address' mod='mpgoogleaddress'}'
+                    });
+                }
             },
             error: function(response){
                 console.log(response);
@@ -196,19 +187,19 @@
         var data_type = $('#ps_addresses ul li.active').attr('data-type');
         var id_address = $('#ps_addresses ul li.active').attr('id_address');
         $.ajax({
-            url: '{$ajax_print_label}',
+            url: '{$ajax_print_label|escape:'htmlall':'UTF-8'}',
             type: 'post',
             data:
             {
                 ajax: true,
                 action: 'printLabel',
-                token: '{$token}',
+                token: '{$token|escape:'htmlall':'UTF-8'}',
                 id_address: id_address,
-                id_order: '{$id_order}'
+                id_order: '{$id_order|escape:'htmlall':'UTF-8'}'
             },
             success: function(response)
             {
-                window.open("{$ajax_print_label}", "Label.pdf");
+                window.open("{$ajax_print_label|escape:'htmlall':'UTF-8'}", "Label.pdf");
             },
             error: function(response){
                 console.log(response);
@@ -216,11 +207,10 @@
         });
 
     }
-    function activatePane()
+    function activatePane(type)
     {
         event.preventDefault();
         var elem = document.activeElement;
-        var type = $(elem).attr('data-type');
         var li = $(elem).closest('li');
         var nav = $(elem).closest('.nav');
         var tabs = $(nav).closest('.row').find('.tab-content');
@@ -233,12 +223,40 @@
     }
     function refreshGeocode(type)
     {
-        var addr = {};
-        if (type=='delivery') {
-            addr = daddr;
-        } else {
-            addr = iaddr;
-        }
+        $.ajax({
+            url: '{$ajax_show_address|escape:'htmlall':'UTF-8'}',
+            type: 'post',
+            dataType: 'json',
+            data:
+            {
+                ajax: true,
+                action: 'showAddress',
+                token: '{$token|escape:'htmlall':'UTF-8'}',
+                type: type,
+                id_order: '{$id_order|escape:'htmlall':'UTF-8'}'
+            },
+            success: function(response)
+            {
+                if (response.result) {
+                    var addr = response.address;
+                    setGeocode(addr);
+                } else {
+                    var addr = null;
+                    $.growl.error({
+                        title: '{l s='Error' mod='mpgoogleaddress'}',
+                        message: '{l s='Unable to get new address' mod='mpgoogleaddress'}'
+                    })
+                    return false;
+                }
+            },
+            error: function(response){
+                console.log(response);
+            }
+        });
+    }
+
+    function setGeocode(addr)
+    {
         var geocoder = new google.maps.Geocoder();
         var address_data = addr.address1
                 +','+

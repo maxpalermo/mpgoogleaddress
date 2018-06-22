@@ -23,38 +23,38 @@
 *  International Registered Trademark & Property of mpSOFT
 *}
 
-<div class="row">
-    <div class=col-md-6>
+<div class="row" style="font-size: 10pt !important;">
+    <div class=col-md-8>
     {if isset($address->company) && !empty($address->company)}
         <div class="row">
-            <i class='icon icon-home i-col'></i><div class="div-col"><strong>{$address->company|upper}</strong></div>
+            <i class='icon icon-home i-col'></i><div class="div-col"><strong>{{$address->company|upper}|escape:'htmlall':'UTF-8'}</strong></div>
         </div>
     {/if}
         <div class="row">
-            <i class='icon icon-user'></i><div class="div-col">{$address->firstname} {$address->lastname}</div>
+            <i class='icon icon-user'></i><div class="div-col">{$address->firstname|escape:'htmlall':'UTF-8'} {$address->lastname|escape:'htmlall':'UTF-8'}</div>
         </div>
         <div class="row">
-            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->address1}</div>
+            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->address1|escape:'htmlall':'UTF-8'}</div>
         </div>
     {if isset($address->address2) && !empty($address->address2)}
         <div class="row">
-            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->address2}</div>
+            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->address2|escape:'htmlall':'UTF-8'}</div>
         </div>
     {/if}
         <div class="row">
-            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->postcode} - {$address->city}</div>
+            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->postcode|escape:'htmlall':'UTF-8'} - {$address->city|escape:'htmlall':'UTF-8'}</div>
         </div>
         <div class="row">
-            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->state->name} <strong>{$address->state->iso_code|upper}</strong></div>
+            <i class='icon icon-map-marker color-blue'></i><div class="div-col">{$address->state->name|escape:'htmlall':'UTF-8'} <strong>{{$address->state->iso_code|upper}|escape:'htmlall':'UTF-8'}</strong></div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="row">
             
         </div>
         <div class="row">
             <span class="badge">
-            <i class='icon icon-phone color-white'></i><div class="div-col"><strong>{$address->phone}</strong></div>
+            <i class='icon icon-phone color-white'></i><div class="div-col"><strong>{$address->phone|escape:'htmlall':'UTF-8'}</strong></div>
             </span>
         </div>
         <div class="row">
@@ -62,7 +62,7 @@
         </div>
         <div class="row">
             <span class="badge badge-success">
-            <i class='icon icon-phone color-yellow'></i><div class="div-col"><strong>{$address->phone_mobile}</strong></div>
+            <i class='icon icon-phone color-yellow'></i><div class="div-col"><strong>{$address->phone_mobile|escape:'htmlall':'UTF-8'}</strong></div>
             </span>
         </div>
         <div class="row">
@@ -73,8 +73,16 @@
             <strong>
                 <i class='icon icon-credit-card color-red'></i>
                 <a id="vat_number_link" href="javascript:void(0);" onclick="verifyVAT();">
-                    {$address->vat_number}
+                    {$address->vat_number|escape:'htmlall':'UTF-8'}
                 </a>
+            </strong>
+        </div>
+    {/if}
+    {if isset($address->dni) && !empty($address->dni)}
+        <div class="row">
+            <strong>
+                <i class='icon icon-user color-red'></i>
+                {{$address->dni|upper}|escape:'htmlall':'UTF-8'}
             </strong>
         </div>
     {/if}
@@ -83,6 +91,6 @@
 <hr>
 <div class="row">
     <div class="col-md-12">
-        <i class='icon icon-comment'></i><div class="div-col">{$address->other}</div>
+        <i class='icon icon-comment'></i><div class="div-col">{$address->other|escape:'htmlall':'UTF-8'}</div>
     </div>
 </div>

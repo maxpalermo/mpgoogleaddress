@@ -26,7 +26,6 @@
 
 require_once(dirname(__FILE__).'../../../config/config.inc.php');
 require_once(dirname(__FILE__).'../../../init.php');
-require_once(dirname(__FILE__)).'/conf.php';
 require_once(dirname(__FILE__).'../../../tools/tcpdf/tcpdf.php');
 
 if (Tools::isSubmit('ajax') && tools::isSubmit('action') && tools::isSubmit('token')) {
@@ -47,7 +46,6 @@ if (Tools::isSubmit('ajax') && tools::isSubmit('action') && tools::isSubmit('tok
     $cookie = new Cookie('psAdmin');
     $cookie->__set('print_label_id_order', $id_order);
     $cookie->__set('print_label_id_address', $id_address);
-
 } else {
     $cookie = new Cookie('psAdmin');
     $id_order = $cookie->__get('print_label_id_order');
@@ -86,7 +84,7 @@ function printLabel($id_order, $id_address)
     $label = $smarty->fetch(dirname(__FILE__).'/views/templates/admin/label.tpl');
 
     // create new PDF document
-    $pageLayout = array(100, 100); //  or array($height, $width) 
+    $pageLayout = array(100, 100); //  or array($height, $width)
     $pdf = new TCPDF('p', 'mm', $pageLayout, true, 'UTF-8', false);
 
     // set document information

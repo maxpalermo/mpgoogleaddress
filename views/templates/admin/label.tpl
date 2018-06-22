@@ -28,42 +28,42 @@
         <tr>
             <td>
                 {if !empty($logo)}
-                <img src="{$logo}">
+                <img src="{$logo|escape:'htmlall':'UTF-8'}">
                 {/if}
             </td>
         </tr>
         <tr>
-            <td style="text-align: right;">{l s='Order' mod='mpgoogleaddress'} {$reference|upper}</td>
+            <td style="text-align: right;">{l s='Order' mod='mpgoogleaddress'} {{$reference|upper}|escape:'htmlall':'UTF-8'}</td>
         </tr>
         <tr>
-            <td style="font-size: 14pt;">{$name|upper}</td>
+            <td style="font-size: 14pt;">{{$name|upper}|escape:'htmlall':'UTF-8'}</td>
         </tr>
         <tr>
             <td><br></td>
         </tr>
         <tr>
-            <td>{$address1}</td>
+            <td>{$address1|escape:'htmlall':'UTF-8'}</td>
         </tr>
         {if !empty($address2)}
         <tr>
-            <td>{$address2}</td>
+            <td>{$address2|escape:'htmlall':'UTF-8'}</td>
         </tr>
         {/if}
         <tr>
-            <td>{$postcode} {$city}</td>
+            <td>{$postcode|escape:'htmlall':'UTF-8'} {$city|escape:'htmlall':'UTF-8'}</td>
         </tr>
         <tr>
-            <td>{$state|upper} <strong>{$iso_code|upper}</strong></td>
+            <td>{{$state|upper}|escape:'htmlall':'UTF-8'} <strong style="font-weight: bold;">{{$iso_code|upper}|escape:'htmlall':'UTF-8'}</strong></td>
         </tr>
         <tr>
             <td><br></td>
         </tr>
         {if !empty($phone) && !empty($phone_mobile)}
-        <tr><td>{l s='Phone' mod='mpgoogleaddress'} {$phone_mobile}</td></tr>
+        <tr><td>{l s='Phone' mod='mpgoogleaddress'} {$phone_mobile|escape:'htmlall':'UTF-8'}</td></tr>
         {else if !empty($phone)}
-        <tr><td>{l s='Phone' mod='mpgoogleaddress'} {$phone}</td></tr>
+        <tr><td>{l s='Phone' mod='mpgoogleaddress'} {$phone|escape:'htmlall':'UTF-8'}</td></tr>
         {else if !empty($phone_mobile)}
-        <tr><td>{l s='Phone' mod='mpgoogleaddress'} {$phone_mobile}</td></tr>
+        <tr><td>{l s='Phone' mod='mpgoogleaddress'} {$phone_mobile|escape:'htmlall':'UTF-8'}</td></tr>
         {/if}
     </tbody>    
 </table>
